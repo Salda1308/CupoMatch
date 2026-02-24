@@ -47,7 +47,7 @@ except Exception as e:
     print(json.dumps({'error': str(e)}))
 `;
 
-      const python = spawn('python', ['-c', pythonScript]);
+      const python = spawn('python3', ['-c', pythonScript]);
       let output = '';
 
       python.stdout.on('data', (data) => {
@@ -186,7 +186,7 @@ except Exception as e:
     print(json.dumps({'error': str(e)}))
 `;
 
-      const python = spawn('python', ['-c', pythonScript]);
+      const python = spawn('python3', ['-c', pythonScript]);
       let output = '';
       let error = '';
 

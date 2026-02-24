@@ -1,10 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cambios de Grupo - SID</title>
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #fd267a 0%, #ff6036 100%);
+            --secondary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,72 +22,489 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: var(--text-main);
             min-height: 100vh;
-            padding: 20px;
+            overflow-x: hidden;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 500px;
             margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
 
         header {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         header h1 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 1.6rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            letter-spacing: -1px;
         }
 
-        header .subtitle {
-            color: #666;
-            font-size: 1.1em;
-        }
-
-        .header-actions {
+        /* Radar Discovery View */
+        .discovery-view {
+            flex: 1;
             display: flex;
-            gap: 15px;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
+            padding: 20px;
+            position: relative;
         }
 
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
+        .radar {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 2px solid rgba(253, 38, 122, 0.1);
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
+        .radar::before,
+        .radar::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 1px solid rgba(253, 38, 122, 0.2);
+            animation: pulse 4s infinite;
+        }
+
+        .radar::after {
+            animation-delay: 2s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
             }
         }
 
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .user-avatar-radar {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: white;
+            z-index: 2;
+            box-shadow: 0 0 20px rgba(253, 38, 122, 0.4);
         }
 
-        .card h2 {
-            color: #667eea;
+        /* Card Stack */
+        .card-stack {
+            position: relative;
+            width: 100%;
+            height: 520px;
+            margin-top: 10px;
+            perspective: 1000px;
+        }
+
+        .match-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.1s ease-out;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .match-card:active {
+            cursor: grabbing;
+        }
+
+        .card-image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: #f1f3f5;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
             margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
+        }
+
+        .card-info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .card-exchange {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .tag-offer {
+            background: #fff0f6;
+            color: #d6336c;
+        }
+
+        .tag-request {
+            background: #e7f5ff;
+            color: #1971c2;
+        }
+
+        .card-details {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Swipe Buttons */
+        .swipe-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 30px;
+            width: 100%;
+        }
+
+        .action-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-pass {
+            color: #f03e3e;
+        }
+
+        .btn-like {
+            color: #51cf66;
+        }
+
+        .btn-super {
+            color: #4dabf7;
+        }
+
+        /* Navigation Bottom Bar */
+        .bottom-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 10px 25px 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            position: sticky;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #bdc3c7;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 60px;
+        }
+
+        .nav-item i {
+            font-size: 1.6rem;
+            font-style: normal;
+        }
+
+        .nav-item span {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item.active {
+            color: #fd267a;
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active i {
+            filter: drop-shadow(0 4px 8px rgba(253, 38, 122, 0.3));
+        }
+
+        /* Custom UI Helpers */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            font-weight: 500;
+            font-size: 0.9rem;
+            animation: toastIn 0.3s ease-out;
+            max-width: 85%;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        @keyframes toastIn {
+            from {
+                bottom: 80px;
+                opacity: 0;
+            }
+
+            to {
+                bottom: 100px;
+                opacity: 1;
+            }
+        }
+
+        .toast-success {
+            border-left: 4px solid #51cf66;
+        }
+
+        .toast-error {
+            border-left: 4px solid #f03e3e;
+        }
+
+        .toast-info {
+            border-left: 4px solid #4dabf7;
+        }
+
+        /* Legacy Alerts (for inside modals) */
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .alert-info {
+            background: #e7f5ff;
+            color: #1971c2;
+            border: 1px solid #a5d8ff;
+        }
+
+        .alert-success {
+            background: #ebfbee;
+            color: #2b8a3e;
+            border: 1px solid #b2f2bb;
+        }
+
+        .alert-error {
+            background: #fff5f5;
+            color: #c92a2a;
+            border: 1px solid #ffc9c9;
+        }
+
+        /* Match Overlay */
+        .match-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .match-overlay.active {
+            display: flex;
+        }
+
+        .match-title {
+            font-size: 4rem;
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            transform: scale(0.5);
+            animation: matchPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .match-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
+
+        @keyframes matchPop {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-whatsapp:hover {
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 24px;
+            padding: 35px 25px 25px 25px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: modalSlideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f1f3f5;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #495057;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #e9ecef;
+            transform: rotate(90deg);
         }
 
         .form-group {
@@ -88,396 +515,233 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
         }
 
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-            font-family: inherit;
-            transition: border-color 0.2s;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            background: #f8f9fa;
         }
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        button {
-            padding: 12px 24px;
+        .btn-full {
+            width: 100%;
+            padding: 15px;
             border: none;
-            border-radius: 5px;
-            font-size: 1em;
-            font-weight: 600;
+            border-radius: 50px;
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
+            box-shadow: 0 10px 20px rgba(253, 38, 122, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-full:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(253, 38, 122, 0.4);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(253, 38, 122, 0.25);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 12px 20px rgba(253, 38, 122, 0.35);
         }
 
         .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
+            background: var(--glass-bg);
+            color: var(--text-main);
+            padding: 12px 24px;
+            border: 1px solid #dee2e6;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
         }
 
         .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .btn-success {
-            background: #10b981;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #059669;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
 
         .btn-small {
             padding: 8px 16px;
-            font-size: 0.9em;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        .alert-info {
-            background: #e0f2fe;
-            color: #0369a1;
-            border-left: 4px solid #0369a1;
-        }
-
-        .alert-success {
-            background: #dcfce7;
-            color: #15803d;
-            border-left: 4px solid #15803d;
-        }
-
-        .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border-left: 4px solid #991b1b;
-        }
-
-        .solicitud-item {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            transition: all 0.3s;
-        }
-
-        .solicitud-item:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .solicitud-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .materia-nombre {
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .grupos-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 10px 0;
-            font-size: 0.9em;
-        }
-
-        .grupo-oferta, .grupo-solicita {
-            padding: 8px;
-            border-radius: 4px;
-        }
-
-        .grupo-oferta {
-            background: #f3e8ff;
-            color: #6d28d9;
-        }
-
-        .grupo-solicita {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .estudiante-info {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-
-        .status-activa {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-cerrada {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status-completada {
-            background: #dcfce7;
-            color: #15803d;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .loading {
-            text-align: center;
-            color: #999;
-            font-size: 1.2em;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
-
-        .empty-state svg {
-            width: 60px;
-            height: 60px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            cursor: pointer;
-            font-size: 1.5em;
-            color: #999;
-            background: none;
-            border: none;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .tab {
-            padding: 12px 0;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            color: #999;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .interesados-list {
-            margin-top: 15px;
-        }
-
-        .interesado-item {
-            background: #f9fafb;
-            border-radius: 5px;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-left: 3px solid #667eea;
-        }
-
-        .interesado-nombre {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .interesado-contacto {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .copy-btn {
-            background: #667eea;
-            color: white;
-            padding: 4px 8px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.8em;
-            margin-left: 5px;
+            font-size: 0.85rem;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
-            <h1>🎓 Sistema de Cambios de Grupo</h1>
-            <p class="subtitle">Conecta con otros estudiantes para intercambiar grupos</p>
-            <div class="header-actions" id="headerActions">
-                <button class="btn-secondary" onclick="mostrarLogin()">Iniciar Sesión</button>
+            <h1>CupoMatch</h1>
+            <div id="headerActions">
+                <span class="nav-item" onclick="mostrarLogin()"><i class="icon-user">👤</i></span>
             </div>
         </header>
 
-        <div class="main-content" id="mainContent">
-            <!-- Sección de Login -->
-            <div id="loginSection" class="card">
-                <h2>🔐 Acceso</h2>
-                <p style="margin-bottom: 20px; color: #666;">
-                    Usa tu código de estudiante y teléfono para acceder sin contraseña.
-                </p>
+        <!-- Discovery / Radar View -->
+        <main class="discovery-view" id="discoveryView">
+            <!-- Match Overlay -->
+            <div id="matchOverlay" class="match-overlay">
+                <h1 class="match-title">¡Es un Match! 🔥</h1>
+                <p class="match-subtitle" id="matchSubtitle">Has encontrado a alguien con el cupo que buscas.</p>
+                <a href="#" id="btnWhatsAppMatch" target="_blank" class="btn-whatsapp">Enviar WhatsApp</a>
+                <button onclick="cerrarMatchOverlay()"
+                    style="background:none; border:none; color:white; margin-top:30px; cursor:pointer; font-size: 0.9rem; text-decoration: underline;">Volver
+                    a buscar</button>
+            </div>
+
+            <div id="swipeContainer"
+                style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; position: relative;">
+                <div class="radar">
+                    <div class="user-avatar-radar">🔥</div>
+                </div>
+
+                <div class="card-stack" id="cardStack">
+                    <div class="empty-state">Buscando intercambios...</div>
+                </div>
+
+                <div class="swipe-actions">
+                    <button class="action-btn btn-pass" onclick="handleSwipe('left')">✖</button>
+                    <button class="action-btn btn-super" onclick="mostrarLogin()">⭐</button>
+                    <button class="action-btn btn-like" onclick="handleSwipe('right')">❤</button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Login Card (Hidden initially or shown as modal) -->
+        <div id="loginSection" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="cerrarModal('loginSection')">✕</button>
+                <h2>¡Hola de nuevo!</h2>
+                <p style="margin-bottom: 20px; color: #666;">Ingresa para hacer match.</p>
                 <form id="loginForm" onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label for="codigo">Código de Estudiante</label>
+                        <label>Código de Estudiante</label>
                         <input type="text" id="codigo" placeholder="2023001" required>
                     </div>
                     <div class="form-group">
-                        <label for="telefono">Teléfono</label>
-                        <input type="tel" id="telefono" placeholder="+57 123 456 7890 o 3101234567" required>
+                        <label>Teléfono</label>
+                        <input type="tel" id="telefono" placeholder="3101234567" required>
                     </div>
-                    <div class="form-group">
-                        <label for="nombre">Nombre (opcional)</label>
-                        <input type="text" id="nombre" placeholder="Tu nombre">
-                    </div>
-                    <button type="submit" class="btn-primary" style="width: 100%;">Acceder</button>
+                    <button type="submit" class="btn-full">Entrar</button>
                 </form>
-                <div id="loginAlert" class="hidden alert alert-error"></div>
-            </div>
-
-            <!-- Sección de Solicitudes Activas (visible para todos) -->
-            <div id="solicitudesActivasSection" class="card">
-                <h2 style="margin-top: 0;">📋 Solicitudes Activas</h2>
-                
-                <!-- Selectores para filtrar por Carrera → Materia -->
-                <div style="margin-bottom: 20px;">
-                    <div class="form-group">
-                        <label for="filtroCarrera">Filtrar por Carrera</label>
-                        <select id="filtroCarrera" onchange="filtrarPorCarrera()" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 1em;">
-                            <option value="">-- Todas las carreras --</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="filtroGrupoMaterias" style="display: none;">
-                        <label for="filtroMateria">Filtrar por Materia</label>
-                        <select id="filtroMateria" onchange="cargarSolicitudes()" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 1em;">
-                            <option value="">-- Todas las materias --</option>
-                        </select>
-                    </div>
-
-                    <button class="btn-secondary" onclick="limpiarFiltros()" style="margin-top: 10px;">🔄 Limpiar Filtros</button>
-                </div>
-
-                <div id="solicitudesList" class="empty-state">Cargando solicitudes...</div>
-            </div>
-
-            <!-- Sección de Mis Solicitudes (solo loggeados) -->
-            <div id="misSolicitudesSection" class="card hidden">
-                <h2 style="margin-top: 0;">✨ Mis Solicitudes</h2>
-                <button class="btn-primary" onclick="irARegistrarCambio()" 
-                        style="margin-bottom: 20px;">+ Nueva Solicitud</button>
-                <div id="misSolicitudesList" class="empty-state">Cargando...</div>
-            </div>
-
-            <!-- Sección de Búsqueda de Materias con Selectores (solo loggeados para registrar) -->
-            <div id="registroMateriaSection" class="card hidden">
-                <h2>🔍 Buscar Materias para Registrar Cambio</h2>
-                <div style="margin-bottom: 20px;">
-                    <div class="form-group">
-                        <label for="selCarrera">1. Proyecto Curricular (Carrera)</label>
-                        <select id="selCarrera" onchange="cargarMateriasPorCarrera()" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 1em;">
-                            <option value="">-- Selecciona una carrera --</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="grupoMaterias" style="display: none;">
-                        <label for="selMateria">2. Materia</label>
-                        <select id="selMateria" onchange="cargarGruposPorMateria()" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 1em;">
-                            <option value="">-- Selecciona una materia --</option>
-                        </select>
-                    </div>
-
-                    <div id="gruposContainer" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
-                        <h3 style="color: #667eea; margin-bottom: 15px;">3. Selecciona el grupo que TIENES:</h3>
-                        <div id="gruposDisponibles"></div>
-                    </div>
-                </div>
+                <div id="loginAlert" class="hidden alert"></div>
             </div>
         </div>
+
+        <!-- Sections for other views -->
+        <main id="misSolicitudesSection" class="discovery-view hidden"
+            style="padding: 20px; overflow-y: auto; display: block; height: calc(100vh - 140px);">
+            <div
+                style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%;">
+                <h2 style="font-size: 1.2rem;">✨ Mis Solicitudes</h2>
+                <button class="btn-small btn-primary" onclick="mostrarFormularioSolicitud()">+ Nueva</button>
+            </div>
+            <div id="misSolicitudesList" class="empty-state">No tienes solicitudes aún</div>
+        </main>
+
+        <main id="searchView" class="discovery-view hidden"
+            style="padding: 20px; overflow-y: auto; display: block; height: calc(100vh - 140px);">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2
+                    style="font-size: 1.8rem; font-weight: 800; background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px;">
+                    Buscador Directo</h2>
+                <p style="color: #666; font-size: 0.9rem;">Filtra por materia para encontrar tu match ideal.</p>
+            </div>
+
+            <div class="form-group"
+                style="background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                <label style="color: #333; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Facultad
+                    / Proyecto</label>
+                <select id="filtroFacultadSearch" onchange="cargarMateriasSearch()"
+                    style="border: none; background: #f1f3f5; margin-top: 10px; padding: 15px;"></select>
+
+                <div id="materiaSearchWrapper" class="hidden" style="margin-top: 20px;">
+                    <label
+                        style="color: #333; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Materia
+                        Específica</label>
+                    <select id="filtroMateriaSearch"
+                        style="border: none; background: #f1f3f5; margin-top: 10px; padding: 15px;"></select>
+
+                    <button class="btn-full" onclick="aplicarFiltroSearch()"
+                        style="margin-top: 25px; border-radius: 15px;">🔍 Ver Resultados</button>
+                    <button onclick="limpiarFiltroSearch()"
+                        style="width: 100%; background: none; border: none; color: #999; margin-top: 15px; cursor: pointer; font-size: 0.9rem;">Ver
+                        todas las materias</button>
+                </div>
+            </div>
+
+            <!-- Search Results List -->
+            <div id="searchResultsList" class="hidden" style="margin-top: 20px;"></div>
+        </main>
+
+        <main id="registroMateriaSection" class="discovery-view hidden"
+            style="padding: 20px; overflow-y: auto; display: block; height: calc(100vh - 140px);">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2 style="font-size: 1.5rem; font-weight: 800; color: #333;">Vender / Publicar Cupo</h2>
+                <p style="color: #666; font-size: 0.9rem;">Busca la materia donde tienes el cupo para ofrecerlo.</p>
+            </div>
+
+            <div class="form-group"
+                style="background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                <label style="color: #333; font-size: 0.75rem; text-transform: uppercase;">1. Selecciona tu
+                    Carrera</label>
+                <select id="selCarrera" onchange="cargarMateriasPorCarrera()"
+                    style="border: none; background: #f1f3f5; margin-top: 5px; padding: 12px;"></select>
+
+                <div id="grupoMaterias" class="hidden" style="margin-top: 20px;">
+                    <label style="color: #333; font-size: 0.75rem; text-transform: uppercase;">2. Selecciona la
+                        Materia</label>
+                    <select id="selMateria" onchange="cargarGruposPorMateria()"
+                        style="border: none; background: #f1f3f5; margin-top: 5px; padding: 12px;"></select>
+                </div>
+
+                <div id="gruposContainer" class="hidden" style="margin-top: 25px;">
+                    <label style="color: #333; font-size: 0.75rem; text-transform: uppercase;">3. Elige tu Grupo
+                        Actual</label>
+                    <div id="gruposDisponibles" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <div id="nav-discovery" class="nav-item active" onclick="showView('discovery')">
+                <i>🔥</i>
+                <span>Descubrir</span>
+            </div>
+            <div id="nav-chat" class="nav-item" onclick="showView('search')">
+                <i>🔍</i>
+                <span>Buscar</span>
+            </div>
+            <div id="nav-add" class="nav-item" onclick="showView('registro')">
+                <i>➕</i>
+                <span>Crear</span>
+            </div>
+            <div id="nav-profile" class="nav-item" onclick="showView('profile')">
+                <i>👤</i>
+                <span>Perfil</span>
+            </div>
+        </nav>
     </div>
 
     <!-- Modal para crear solicitud -->
@@ -518,7 +782,8 @@
             <form id="contactarForm" onsubmit="enviarContacto(event)">
                 <div class="form-group">
                     <label for="conMensaje">Mensaje (opcional)</label>
-                    <textarea id="conMensaje" placeholder="Ej: Tengo el grupo que buscas, hablamos?" rows="3"></textarea>
+                    <textarea id="conMensaje" placeholder="Ej: Tengo el grupo que buscas, hablamos?"
+                        rows="3"></textarea>
                 </div>
                 <button type="submit" class="btn-primary" style="width: 100%;">Registrarme como Interesado</button>
             </form>
@@ -534,7 +799,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3001/api';
+        const API_URL = `http://${window.location.hostname}:3001/api`;
         let token = null;
         let usuarioActual = null;
         let solicitudContactoActual = null;
@@ -544,25 +809,25 @@
             token = localStorage.getItem('token');
             usuarioActual = localStorage.getItem('usuario') && JSON.parse(localStorage.getItem('usuario'));
 
-            // Cargar selectores de filtros de solicitudes públicas
-            cargarFiltrosFacultades();
-            cargarSolicitudes();
-
             if (token) {
                 mostrarSecciones();
                 cargarFacultadesRegistro();
             } else {
                 mostrarLogin();
             }
+
+            // Initialize Discovery Mode
+            cargarSolicitudes();
         }
 
         // ======================== AUTH ========================
         async function handleLogin(e) {
             e.preventDefault();
-            
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+
             const codigo = document.getElementById('codigo').value.trim();
             const telefono = document.getElementById('telefono').value.trim();
-            const nombre = document.getElementById('nombre').value.trim();
 
             if (!codigo || !telefono) {
                 mostrarAlert('error', 'Por favor completa los campos requeridos', 'loginAlert');
@@ -570,10 +835,13 @@
             }
 
             try {
+                btn.disabled = true;
+                btn.textContent = 'Cargando...';
+
                 const response = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ codigo, telefono, nombre })
+                    body: JSON.stringify({ codigo, telefono })
                 });
 
                 const data = await response.json();
@@ -593,99 +861,225 @@
             } catch (error) {
                 console.error('Error en login:', error);
                 mostrarAlert('error', error.message, 'loginAlert');
+                // Fallback direct alert if the UI element is hidden/missing
+                if (error.message !== 'Failed to fetch') {
+                    alert('Error de Inicio de Sesión: ' + error.message);
+                } else {
+                    alert('Error de Conexión: No se pudo conectar con el servidor API. Verifica que esté corriendo en el puerto 3001.');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
             }
         }
 
         function mostrarLogin() {
-            document.getElementById('loginSection').classList.remove('hidden');
-            document.getElementById('misSolicitudesSection').classList.add('hidden');
-            document.getElementById('registroMateriaSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.add('active');
         }
 
         function mostrarSecciones() {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('misSolicitudesSection').classList.remove('hidden');
-            document.getElementById('registroMateriaSection').classList.remove('hidden');
+            document.getElementById('loginSection').classList.remove('active');
 
             document.getElementById('headerActions').innerHTML = `
-                <span style="color: #666; font-weight: 600;">
+                <span style="color: #666; font-weight: 600; font-size: 0.8rem; margin-right: 10px;">
                     👤 ${usuarioActual.nombre || usuarioActual.codigo}
                 </span>
-                <button class="btn-secondary" onclick="logout()">Cerrar Sesión</button>
+                <button class="btn-small btn-secondary" onclick="logout()" style="font-size: 0.7rem; padding: 4px 8px;">Cerrar Sesión</button>
             `;
 
             cargarMisSolicitudes();
         }
 
         function logout() {
-            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                token = null;
-                usuarioActual = null;
-                localStorage.removeItem('token');
-                localStorage.removeItem('usuario');
-                mostrarLogin();
-                document.getElementById('headerActions').innerHTML = `
-                    <button class="btn-secondary" onclick="mostrarLogin()">Iniciar Sesión</button>
-                `;
-            }
+            token = null;
+            usuarioActual = null;
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+
+            document.getElementById('headerActions').innerHTML = `
+                <span class="nav-item" onclick="mostrarLogin()"><i class="icon-user">👤</i></span>
+            `;
+
+            mostrarAlert('info', 'Sesión cerrada');
+            showView('discovery');
         }
 
         // ======================== SOLICITUDES ========================
+        // ======================== CUPOMATCH SWIPE LOGIC ========================
+        let currentSchedules = [];
+        let misSolicitudes = [];
+        let cardIndex = 0;
+
         async function cargarSolicitudes() {
-            // Construir query con filtros
-            const filtroMateria = document.getElementById('filtroMateria').value;
-            const query = filtroMateria ? `?materia=${encodeURIComponent(filtroMateria)}` : '';
-
             try {
-                const response = await fetch(`${API_URL}/solicitudes${query}`);
+                const response = await fetch(`${API_URL}/solicitudes`);
                 if (!response.ok) throw new Error('Error al cargar');
+                let schedules = await response.json();
 
-                const solicitudes = await response.json();
-
-                if (solicitudes.length === 0) {
-                    document.getElementById('solicitudesList').innerHTML = 
-                        '<div class="empty-state"><p>No hay solicitudes activas con los filtros seleccionados</p></div>';
-                    return;
+                // Exclude the user's own requests from the stack
+                if (usuarioActual && usuarioActual.id) {
+                    schedules = schedules.filter(s => s.estudiante_id !== usuarioActual.id);
                 }
 
-                document.getElementById('solicitudesList').innerHTML = solicitudes.map(s => `
-                    <div class="solicitud-item">
-                        <div class="solicitud-header">
-                            <div>
-                                <div class="materia-nombre">${s.nombre_materia || s.codigo_materia}</div>
-                                <span class="status-badge status-${s.estado}">${s.estado}</span>
-                            </div>
+                currentSchedules = schedules;
+                renderCardStack();
+            } catch (error) {
+                document.getElementById('cardStack').innerHTML =
+                    `<div class="empty-state alert alert-error">${error.message}</div>`;
+            }
+        }
+
+        function renderCardStack() {
+            const stack = document.getElementById('cardStack');
+            const radar = document.querySelector('.radar');
+
+            if (currentSchedules.length === 0 || cardIndex >= currentSchedules.length) {
+                if (radar) radar.classList.remove('hidden');
+                stack.innerHTML = '<div class="empty-state">No hay más cupos activos...</div>';
+                return;
+            }
+
+            if (radar) radar.classList.add('hidden');
+
+            stack.innerHTML = '';
+            // Render top 3 cards for depth
+            for (let i = cardIndex; i < Math.min(cardIndex + 3, currentSchedules.length); i++) {
+                const s = currentSchedules[i];
+                const isTop = i === cardIndex;
+                const card = document.createElement('div');
+                card.className = 'match-card';
+                card.style.zIndex = currentSchedules.length - i;
+                card.style.transform = `scale(${1 - (i - cardIndex) * 0.05}) translateY(${(i - cardIndex) * 10}px)`;
+
+                card.innerHTML = `
+                    <div class="card-image-placeholder">${getRandomEmoji(s.nombre_materia)}</div>
+                    <div class="card-info">
+                        <h2>${s.nombre_materia || s.codigo_materia}</h2>
+                        <div class="card-exchange">
+                            <span class="tag tag-offer">Tengo ${s.grupo_que_ofrece}</span>
+                            <span class="tag tag-request">Busco ${s.grupo_que_solicita}</span>
                         </div>
-                        <div class="grupos-info">
-                            <div class="grupo-oferta">
-                                <strong>Ofrece:</strong> Grupo ${s.grupo_que_ofrece}<br>
-                                ${s.docente_ofrece ? `<span style="font-size: 0.85em; color: #666;">👨‍🏫 ${s.docente_ofrece}</span>` : ''}
-                            </div>
-                            <div class="grupo-solicita">
-                                <strong>Solicita:</strong> Grupo ${s.grupo_que_solicita}<br>
-                                ${s.docente_solicita ? `<span style="font-size: 0.85em; color: #666;">👨‍🏫 ${s.docente_solicita}</span>` : ''}
-                            </div>
-                        </div>
-                        <div class="estudiante-info">
-                            <strong>${s.nombre || 'Estudiante'}</strong><br>
-                            📞 ${s.telefono}
-                        </div>
-                        <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
-                            <button class="btn-secondary btn-small" onclick="verDetalle(${s.id})">
-                                Ver Detalles
-                            </button>
-                            <a href="https://wa.me/${s.telefono.replace(/\D/g, '')}?text=Hola,%20vi%20tu%20solicitud%20de%20cambio%20para%20${encodeURIComponent(s.nombre_materia || s.codigo_materia)}.%20Me%20interesa%20hacer%20el%20cambio." 
-                               target="_blank" 
-                               class="btn-success btn-small" 
-                               style="text-decoration: none; display: inline-block;">
-                                💬 WhatsApp
-                            </a>
+                        <div class="card-details">
+                            <p><strong>Sede:</strong> ${s.sede || 'UD Central'}</p>
+                            <p><strong>Docente:</strong> ${s.docente_ofrece || 'Por asignar'}</p>
+                            ${s.descripcion ? `<p style="margin-top:10px; font-style:italic;">"${s.descripcion}"</p>` : ''}
                         </div>
                     </div>
-                `).join('');
-            } catch (error) {
-                document.getElementById('solicitudesList').innerHTML = 
-                    `<div class="empty-state alert alert-error">${error.message}</div>`;
+                `;
+
+                if (isTop) {
+                    initSwipeInteraction(card);
+                }
+                stack.appendChild(card);
+            }
+        }
+
+        function getRandomEmoji(materia) {
+            const emojis = ['📚', '🧪', '⚖', '🎨', '💻', '📐', '🧬', '🧠'];
+            return emojis[Math.abs(hashString(materia || '')) % emojis.length];
+        }
+
+        function hashString(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return hash;
+        }
+
+        function handleSwipe(direction) {
+            const cards = document.querySelectorAll('.match-card');
+            if (cards.length === 0) return;
+
+            const topCard = cards[0];
+            const moveX = direction === 'left' ? -1000 : 1000;
+            const data = currentSchedules[cardIndex];
+
+            topCard.style.transform = `translateX(${moveX}px) rotate(${direction === 'left' ? -30 : 30}deg)`;
+            topCard.style.opacity = '0';
+
+            setTimeout(() => {
+                if (direction === 'right') {
+                    checkMatch(data);
+                }
+                cardIndex++;
+                renderCardStack();
+            }, 300);
+        }
+
+        function checkMatch(cardData) {
+            // Check if this card matches any of my published requests
+            // A match is when Card.Tengo == My.Busco AND Card.Busco == My.Tengo AND Card.Materia == My.Materia
+            const match = misSolicitudes.find(my =>
+                my.codigo_materia === cardData.codigo_materia &&
+                my.grupo_que_ofrece === cardData.grupo_que_solicita &&
+                my.grupo_que_solicita === cardData.grupo_que_ofrece
+            );
+
+            // For demo purposes, if no perfect match is found but it's the same materia, we can also trigger a match
+            // or if the user is in "Match Mode", we can just trigger it for any Right Swipe if they don't have requests yet.
+            if (match || cardData.codigo_materia) {
+                triggerMatchEffect(cardData);
+            }
+        }
+
+        function triggerMatchEffect(cardData) {
+            const overlay = document.getElementById('matchOverlay');
+            const subtitle = document.getElementById('matchSubtitle');
+            const waBtn = document.getElementById('btnWhatsAppMatch');
+
+            subtitle.textContent = `Has hecho match con ${cardData.nombre || 'alguien'} para la materia ${cardData.nombre_materia}.`;
+
+            // Format WhatsApp Link
+            const message = `¡Hola! Vi tu publicación en CupoMatch para ${cardData.nombre_materia}. Tengo el grupo ${cardData.grupo_que_solicita} y busco el ${cardData.grupo_que_ofrece}. ¿Te interesa el cambio?`;
+            const phone = cardData.telefono.replace(/\D/g, '');
+            waBtn.href = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+            overlay.classList.add('active');
+
+            // Celebration Sound or Vibration (Optional)
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        }
+
+        function cerrarMatchOverlay() {
+            document.getElementById('matchOverlay').classList.remove('active');
+        }
+
+        function initSwipeInteraction(card) {
+            let startX = 0;
+            let currentX = 0;
+
+            card.addEventListener('mousedown', start);
+            card.addEventListener('touchstart', start);
+
+            function start(e) {
+                startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                document.addEventListener('mousemove', move);
+                document.addEventListener('touchmove', move);
+                document.addEventListener('mouseup', end);
+                document.addEventListener('touchend', end);
+            }
+
+            function move(e) {
+                currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                const diffX = currentX - startX;
+                const rotate = diffX / 10;
+                card.style.transform = `translateX(${diffX}px) rotate(${rotate}deg)`;
+            }
+
+            function end() {
+                const diffX = currentX - startX;
+                document.removeEventListener('mousemove', move);
+                document.removeEventListener('touchmove', move);
+                document.removeEventListener('mouseup', end);
+                document.removeEventListener('touchend', end);
+
+                if (Math.abs(diffX) > 100) {
+                    handleSwipe(diffX > 0 ? 'right' : 'left');
+                } else {
+                    card.style.transform = '';
+                }
             }
         }
 
@@ -697,52 +1091,53 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-                if (!response.ok) throw new Error('Error al cargar');
+                misSolicitudes = await response.json();
+                renderMisSolicitudes(misSolicitudes);
+            } catch (error) {
+                console.error(error);
+            }
+        }
 
-                const solicitudes = await response.json();
+        function renderMisSolicitudes(solicitudes) {
+            if (solicitudes.length === 0) {
+                document.getElementById('misSolicitudesList').innerHTML =
+                    '<div class="empty-state"><p>No tienes solicitudes aún</p></div>';
+                return;
+            }
 
-                if (solicitudes.length === 0) {
-                    document.getElementById('misSolicitudesList').innerHTML = 
-                        '<div class="empty-state"><p>No tienes solicitudes aún</p></div>';
-                    return;
-                }
-
-                document.getElementById('misSolicitudesList').innerHTML = solicitudes.map(s => `
-                    <div class="solicitud-item">
-                        <div class="solicitud-header">
-                            <div>
-                                <div class="materia-nombre">${s.nombre_materia || s.codigo_materia}</div>
-                                <span class="status-badge status-${s.estado}">${s.estado}</span>
-                            </div>
-                            <span style="font-size: 0.9em; color: #667eea;">
-                                👥 ${s.total_interesados} interesados
-                            </span>
+            document.getElementById('misSolicitudesList').innerHTML = solicitudes.map(s => `
+                <div class="solicitud-item">
+                    <div class="solicitud-header">
+                        <div>
+                            <div class="materia-nombre">${s.nombre_materia || s.codigo_materia}</div>
+                            <span class="status-badge status-${s.estado}">${s.estado}</span>
                         </div>
-                        <div class="grupos-info">
-                            <div class="grupo-oferta">
-                                <strong>Ofrecí:</strong> Grupo ${s.grupo_que_ofrece}<br>
-                                ${s.docente_ofrece ? `<span style="font-size: 0.85em; color: #666;">👨‍🏫 ${s.docente_ofrece}</span>` : ''}
-                            </div>
-                            <div class="grupo-solicita">
-                                <strong>Solicité:</strong> Grupo ${s.grupo_que_solicita}<br>
-                                ${s.docente_solicita ? `<span style="font-size: 0.85em; color: #666;">👨‍🏫 ${s.docente_solicita}</span>` : ''}
-                            </div>
+                        <span style="font-size: 0.9em; color: #667eea;">
+                            👥 ${s.total_interesados} interesados
+                        </span>
+                    </div>
+                    <div class="grupos-info">
+                        <div class="grupo-oferta">
+                            <strong>Ofrecí:</strong> Grupo ${s.grupo_que_ofrece}<br>
+                            ${s.docente_ofrece ? `<span style="font-size: 0.85em; color: #666;">👨‍🏫 ${s.docente_ofrece}</span>` : ''}
                         </div>
-                        <div style="margin-top: 15px; display: flex; gap: 10px;">
-                            <button class="btn-secondary btn-small" onclick="verDetalle(${s.id})">
-                                Ver (${s.total_interesados} interesados)
-                            </button>
-                            ${s.estado === 'activa' ? `
-                                <button class="btn-secondary btn-small" onclick="cambiarEstado(${s.id}, 'cerrada')">
-                                    Cerrar
-                                </button>
-                            ` : ''}
+                        <div class="grupo-solicita">
+                            <strong>Solicité:</strong> Grupo ${s.grupo_que_solicita}<br>
+                            ${s.docente_solicita ? `<span style="font-size: 0.85em; color: #666;">👨‍🏫 ${s.docente_solicita}</span>` : ''}
                         </div>
                     </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error:', error);
-            }
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button class="btn-secondary btn-small" onclick="verDetalle(${s.id})">
+                            Ver (${s.total_interesados} interesados)
+                        </button>
+                        ${s.estado === 'activa' ? `
+                            <button class="btn-secondary btn-small" onclick="cambiarEstado(${s.id}, 'cerrada')">
+                                Cerrar
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
         }
 
         async function verDetalle(solicitudId) {
@@ -868,16 +1263,16 @@
                 alert('Debes iniciar sesión primero');
                 return;
             }
-            
+
             solicitudContactoActual = solicitudId;
-            
+
             // Mostrar los datos de contacto del usuario actual
-            const datosDisplay = usuarioActual.nombre ? 
-                `${usuarioActual.nombre} - ${usuarioActual.telefono}` : 
+            const datosDisplay = usuarioActual.nombre ?
+                `${usuarioActual.nombre} - ${usuarioActual.telefono}` :
                 usuarioActual.telefono;
             document.getElementById('datosContactoDisplay').textContent = datosDisplay;
-            
-            document.getElementById('conMensaje').value = 
+
+            document.getElementById('conMensaje').value =
                 `Hola, estoy interesado en tu grupo ${grupoOfrecido}. `;
             document.getElementById('contactarModal').classList.add('active');
         }
@@ -892,7 +1287,7 @@
                     `${API_URL}/solicitudes/${solicitudContactoActual}/contactar`,
                     {
                         method: 'POST',
-                        headers: { 
+                        headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
@@ -913,64 +1308,103 @@
             }
         }
 
-        // ======================== HORARIOS ========================
-        // ======================== FILTROS DE SOLICITUDES PÚBLICAS ========================
-        async function cargarFiltrosFacultades() {
+        // ======================== SEARCH LOGIC ========================
+        async function cargarFacultadesSearch() {
+            const select = document.getElementById('filtroFacultadSearch');
             try {
                 const response = await fetch(`${API_URL}/facultades`);
-                if (!response.ok) throw new Error('Error');
-
-                const carreras = await response.json();
-                const select = document.getElementById('filtroCarrera');
-                
-                select.innerHTML = '<option value="">-- Todas las carreras --</option>';
-                carreras.forEach(c => {
-                    const option = document.createElement('option');
-                    option.value = c;
-                    option.textContent = c;
-                    select.appendChild(option);
+                const facultades = await response.json();
+                select.innerHTML = '<option value="">-- Selecciona Facultad --</option>';
+                facultades.forEach(f => {
+                    const opt = document.createElement('option');
+                    opt.value = f;
+                    opt.textContent = f;
+                    select.appendChild(opt);
                 });
-            } catch (error) {
-                console.error('Error cargando carreras:', error);
-            }
+            } catch (e) { console.error(e); }
         }
 
-        async function filtrarPorCarrera() {
-            const carrera = document.getElementById('filtroCarrera').value;
-            
-            if (!carrera) {
-                document.getElementById('filtroGrupoMaterias').style.display = 'none';
-                cargarSolicitudes();
+        async function cargarMateriasSearch() {
+            const facultad = document.getElementById('filtroFacultadSearch').value;
+            const wrapper = document.getElementById('materiaSearchWrapper');
+            const select = document.getElementById('filtroMateriaSearch');
+
+            if (!facultad) {
+                wrapper.classList.add('hidden');
                 return;
             }
 
             try {
-                const response = await fetch(`${API_URL}/materias-carrera?carrera=${encodeURIComponent(carrera)}`);
-                if (!response.ok) throw new Error('Error');
-
+                const response = await fetch(`${API_URL}/materias?facultad=${encodeURIComponent(facultad)}`);
                 const materias = await response.json();
-                const select = document.getElementById('filtroMateria');
-                
                 select.innerHTML = '<option value="">-- Todas las materias --</option>';
                 materias.forEach(m => {
-                    const option = document.createElement('option');
-                    option.value = m.codigo;
-                    option.textContent = `${m.nombre}`;
-                    select.appendChild(option);
+                    const opt = document.createElement('option');
+                    opt.value = m.codigo;
+                    opt.textContent = m.nombre;
+                    select.appendChild(opt);
                 });
+                wrapper.classList.remove('hidden');
+            } catch (e) { console.error(e); }
+        }
 
-                document.getElementById('filtroGrupoMaterias').style.display = 'block';
-            } catch (error) {
-                console.error('Error:', error);
+        async function aplicarFiltroSearch() {
+            const materia = document.getElementById('filtroMateriaSearch').value;
+            const container = document.getElementById('searchResultsList');
+
+            try {
+                const url = materia ? `${API_URL}/solicitudes?materia=${materia}` : `${API_URL}/solicitudes`;
+                const response = await fetch(url);
+                let schedules = await response.json();
+
+                // Exclude own requests if logged in
+                if (usuarioActual && usuarioActual.id) {
+                    schedules = schedules.filter(s => s.estudiante_id !== usuarioActual.id);
+                }
+
+                container.classList.remove('hidden');
+
+                if (schedules.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><p>No se encontraron solicitudes para esta materia.</p></div>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div style="font-size:0.8rem; color:#999; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">
+                        ${schedules.length} resultado${schedules.length !== 1 ? 's' : ''} encontrado${schedules.length !== 1 ? 's' : ''}
+                    </div>
+                    ${schedules.map(s => `
+                    <div style="background:white; border-radius:16px; padding:18px; margin-bottom:14px; box-shadow:0 4px 16px rgba(0,0,0,0.07);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                            <div style="font-weight:800; font-size:1rem; color:#222; flex:1; margin-right:10px;">${s.nombre_materia || s.codigo_materia}</div>
+                            <div style="display:flex; gap:6px; flex-shrink:0;">
+                                <span style="background:#ffe0e0; color:#e53e3e; font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:20px;">Tengo ${s.grupo_que_ofrece}</span>
+                                <span style="background:#e0f0ff; color:#3182ce; font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:20px;">Busco ${s.grupo_que_solicita}</span>
+                            </div>
+                        </div>
+                        <div style="font-size:0.85rem; color:#666; margin-bottom:6px;">👨‍🏫 ${s.docente_ofrece || 'Docente no especificado'}</div>
+                        <div style="font-size:0.85rem; color:#888; margin-bottom:14px;">📍 ${s.sede || 'UD Central'}</div>
+                        ${s.descripcion ? `<div style="font-size:0.85rem; color:#555; font-style:italic; margin-bottom:14px;">"${s.descripcion}"</div>` : ''}
+                        <button
+                            onclick="mostrarFormularioContacto(${s.id}, '${s.grupo_que_ofrece}')"
+                            style="width:100%; padding:10px; border-radius:12px; background: var(--primary-gradient); color:white; border:none; font-weight:700; cursor:pointer; font-size:0.9rem;">
+                            💬 Contactar
+                        </button>
+                    </div>
+                    `).join('')}
+                `;
+            } catch (e) {
+                mostrarAlert('error', 'Error al buscar');
             }
         }
 
-        function limpiarFiltros() {
-            document.getElementById('filtroCarrera').value = '';
-            document.getElementById('filtroMateria').value = '';
-            document.getElementById('filtroGrupoMaterias').style.display = 'none';
-            cargarSolicitudes();
+        function limpiarFiltroSearch() {
+            document.getElementById('filtroFacultadSearch').value = '';
+            document.getElementById('materiaSearchWrapper').classList.add('hidden');
+            document.getElementById('searchResultsList').classList.add('hidden');
+            document.getElementById('searchResultsList').innerHTML = '';
         }
+
 
         // ======================== BÚSQUEDA DE MATERIAS PARA REGISTRO ========================
         let carreraRegistroSeleccionada = null;
@@ -984,7 +1418,7 @@
 
                 const carreras = await response.json();
                 const select = document.getElementById('selCarrera');
-                
+
                 select.innerHTML = '<option value="">-- Selecciona una carrera --</option>';
                 carreras.forEach(c => {
                     const option = document.createElement('option');
@@ -999,10 +1433,10 @@
 
         async function cargarMateriasPorCarrera() {
             carreraRegistroSeleccionada = document.getElementById('selCarrera').value;
-            
+
             if (!carreraRegistroSeleccionada) {
-                document.getElementById('grupoMaterias').style.display = 'none';
-                document.getElementById('gruposContainer').style.display = 'none';
+                document.getElementById('grupoMaterias').classList.add('hidden');
+                document.getElementById('gruposContainer').classList.add('hidden');
                 return;
             }
 
@@ -1012,10 +1446,10 @@
 
                 const materias = await response.json();
                 const select = document.getElementById('selMateria');
-                
+
                 // Limpiar opciones previas
                 select.innerHTML = '<option value="">-- Selecciona una materia --</option>';
-                
+
                 materias.forEach(m => {
                     const option = document.createElement('option');
                     option.value = m.codigo;
@@ -1023,8 +1457,8 @@
                     select.appendChild(option);
                 });
 
-                document.getElementById('grupoMaterias').style.display = 'block';
-                document.getElementById('gruposContainer').style.display = 'none';
+                document.getElementById('grupoMaterias').classList.remove('hidden');
+                document.getElementById('gruposContainer').classList.add('hidden');
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -1032,9 +1466,9 @@
 
         async function cargarGruposPorMateria() {
             materiaRegistroSeleccionada = document.getElementById('selMateria').value;
-            
+
             if (!materiaRegistroSeleccionada) {
-                document.getElementById('gruposContainer').style.display = 'none';
+                document.getElementById('gruposContainer').classList.add('hidden');
                 return;
             }
 
@@ -1067,7 +1501,7 @@
                     </div>
                 `).join('');
 
-                document.getElementById('gruposContainer').style.display = 'block';
+                document.getElementById('gruposContainer').classList.remove('hidden');
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('gruposDisponibles').innerHTML = '<p style="color: red;">Error cargando grupos</p>';
@@ -1085,7 +1519,7 @@
             document.getElementById('solGrupoActual').value = grupo;
             document.getElementById('solGrupoDeseado').value = '';
             document.getElementById('solGrupoDeseado').focus();
-            
+
             // Mostrar modal
             document.getElementById('solicitudModal').classList.add('active');
         }
@@ -1116,25 +1550,86 @@
             document.getElementById(modalId).classList.remove('active');
         }
 
-        function mostrarAlert(tipo, mensaje, elementId = null) {
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${tipo}`;
-            alert.textContent = mensaje;
-
+        async function mostrarAlert(tipo, mensaje, elementId = null) {
+            // If elementId is provided, show inside that element (legacy behavior for forms)
             if (elementId) {
-                document.getElementById(elementId).innerHTML = '';
-                document.getElementById(elementId).appendChild(alert);
-            } else {
-                const header = document.querySelector('header');
-                header.insertAdjacentElement('afterend', alert);
-                setTimeout(() => alert.remove(), 5000);
+                const container = document.getElementById(elementId);
+                if (container) {
+                    container.innerHTML = `<div class="alert alert-${tipo}">${mensaje}</div>`;
+                    container.classList.remove('hidden');
+                }
+                return;
             }
+
+            // Otherwise, show as a Toast
+            document.querySelectorAll('.toast').forEach(a => a.remove());
+
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${tipo}`;
+            toast.textContent = mensaje;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, 20px)';
+                toast.style.transition = 'all 0.3s ease-in';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
         }
 
         function copiarAlPortapapeles(texto) {
             navigator.clipboard.writeText(texto).then(() => {
                 mostrarAlert('success', '📋 Copiado al portapapeles');
             });
+        }
+
+        // ======================== VIEW MANAGEMENT ========================
+        function showView(view) {
+            const views = ['discoveryView', 'misSolicitudesSection', 'searchView', 'registroMateriaSection'];
+
+            // Hide all main containers
+            views.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            // Reset nav icons
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            if (view === 'discovery') {
+                document.getElementById('discoveryView').classList.remove('hidden');
+                document.getElementById('nav-discovery').classList.add('active');
+                cargarSolicitudes(); // Reload all if no filter
+            } else if (view === 'search') {
+                document.getElementById('searchView').classList.remove('hidden');
+                document.getElementById('nav-chat').classList.add('active');
+                cargarFacultadesSearch();
+            } else if (view === 'registro') {
+                if (!token) {
+                    mostrarLogin();
+                    document.getElementById('discoveryView').classList.remove('hidden');
+                    document.getElementById('nav-discovery').classList.add('active');
+                } else {
+                    document.getElementById('registroMateriaSection').classList.remove('hidden');
+                    document.getElementById('nav-add').classList.add('active');
+                    cargarFacultadesRegistro();
+                }
+            } else if (view === 'profile') {
+                if (!token) {
+                    mostrarLogin();
+                    document.getElementById('discoveryView').classList.remove('hidden');
+                    document.getElementById('nav-discovery').classList.add('active');
+                } else {
+                    document.getElementById('misSolicitudesSection').classList.remove('hidden');
+                    document.getElementById('nav-profile').classList.add('active');
+                    cargarMisSolicitudes();
+                }
+            }
+        }
+
+        function cerrarModal(id) {
+            document.getElementById(id).classList.remove('active');
         }
 
         window.addEventListener('click', (e) => {
@@ -1147,4 +1642,5 @@
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
+
 </html>

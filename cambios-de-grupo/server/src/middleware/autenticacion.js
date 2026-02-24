@@ -15,10 +15,10 @@ export function generarClaveUnica(codigoEstudiante, numeroMateria, telefono) {
  */
 export async function verificarClaveEstudiante(codigoEstudiante, numeroMateria, telefono) {
   const authKey = generarClaveUnica(codigoEstudiante, numeroMateria, telefono);
-  
+
   let estudiante = await getQuery(
-    'SELECT * FROM estudiantes WHERE auth_key = ?',
-    [authKey]
+    'SELECT * FROM estudiantes WHERE codigo_estudiante = ?',
+    [codigoEstudiante]
   );
 
   // Si no existe, crearlo
@@ -29,10 +29,17 @@ export async function verificarClaveEstudiante(codigoEstudiante, numeroMateria, 
       VALUES (?, ?, ?)`,
       [codigoEstudiante, telefono, authKey]
     );
-    
+
     estudiante = await getQuery(
-      'SELECT * FROM estudiantes WHERE auth_key = ?',
-      [authKey]
+      'SELECT * FROM estudiantes WHERE codigo_estudiante = ?',
+      [codigoEstudiante]
+    );
+  } else if (estudiante.telefono !== telefono) {
+    // Si la clave ya existía, pero con otro teléfono, opcionalmente actualizar el teléfono
+    // o simplemente actualizar la auth_key. Para simplificar, actualizamos la llave y teléfono.
+    await runQuery(
+      'UPDATE estudiantes SET telefono = ?, auth_key = ? WHERE codigo_estudiante = ?',
+      [telefono, authKey, codigoEstudiante]
     );
   }
 
@@ -72,7 +79,7 @@ export function verificarToken(token) {
 
     const [header, body, firma] = token.split('.');
     const secret = process.env.JWT_SECRET || 'secreto-cambios-grupo-2026';
-    
+
     const firmaCalculada = crypto
       .createHmac('sha256', secret)
       .update(`${header}.${body}`)
@@ -81,7 +88,7 @@ export function verificarToken(token) {
     if (firma !== firmaCalculada) return null;
 
     const payload = JSON.parse(Buffer.from(body, 'base64').toString());
-    
+
     // Verificar expiración
     if (payload.exp < Math.floor(Date.now() / 1000)) {
       return null;
@@ -102,7 +109,7 @@ export function middleware_autenticacion(req, res, next) {
   const payload = verificarToken(token);
 
   if (!payload) {
-    return res.status(401).json({ 
+    return res.status(401).json({
       error: 'No autorizado',
       mensaje: 'Token inválido o expirado'
     });
