@@ -1,0 +1,18 @@
+{
+  "name": "cambios-grupo-frontend",
+  "version": "1.0.0",
+  "description": "Frontend para sistema de cambios de grupo",
+  "scripts": {
+    "dev": "python -m http.server 3000",
+    "start": "python -m http.server 3000",
+    "serve": "npx serve -p 3000"
+  },
+  "keywords": [
+    "cambios",
+    "grupo",
+    "estudiantes",
+    "sid"
+  ],
+  "author": "",
+  "license": "MIT"
+}

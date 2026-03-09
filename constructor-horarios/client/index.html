@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constructor de Horarios - Diseña tu horario perfecto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --primary-light: #a78bfa;
+            --secondary: #06b6d4;
+            --secondary-dark: #0891b2;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border: #475569;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* PANEL IZQUIERDO - Búsqueda y Materias */
+        .sidebar {
+            width: 380px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-bottom: 1px solid var(--primary-dark);
+        }
+
+        .sidebar-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .filters {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .filter-group {
+            margin-bottom: 16px;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        select option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        select:hover, input:hover {
+            border-color: var(--primary);
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .materias-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .materia-item {
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .materia-item:hover {
+            background: rgba(124, 58, 237, 0.15);
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .materia-item.selected {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary), inset 0 0 0 1px rgba(124, 58, 237, 0.3);
+        }
+
+        .materia-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .materia-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+        }
+
+        .materia-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(124, 58, 237, 0.3);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary-light);
+        }
+
+        /* MAIN - Horario Visual */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+        }
+
+        .main-header {
+            padding: 24px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+        }
+
+        button.secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: rgba(124, 58, 237, 0.1);
+            border-color: var(--primary);
+        }
+
+        button.danger {
+            background: var(--danger);
+        }
+
+        button.danger:hover {
+            background: #dc2626;
+        }
+
+        .horario-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.55fr) minmax(360px, 1fr);
+            gap: 24px;
+        }
+
+        .horario-grid {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grid-header {
+            display: grid;
+            grid-template-columns: 80px repeat(6, 1fr);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 0;
+        }
+
+        .grid-header-cell {
+            padding: 16px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 13px;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .grid-header-cell:last-child {
+            border-right: none;
+        }
+
+        .grid-body {
+            display: flex;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .time-column {
+            width: 80px;
+            background: var(--bg-tertiary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .time-slot {
+            flex: 1;
+            min-height: 60px;
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .days-columns {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            flex: 1;
+        }
+
+        .day-column {
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .day-column:last-child {
+            border-right: none;
+        }
+
+        .class-slot {
+            flex: 1;
+            min-height: 60px;
+            border-bottom: 1px solid var(--border);
+            padding: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .class {
+            position: absolute;
+            left: 4px;
+            right: 4px;
+            top: 4px;
+            bottom: 4px;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: white;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            line-height: 1.2;
+        }
+
+        .class:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        .class.color-0 { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); }
+        .class.color-1 { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+        .class.color-2 { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .class.color-3 { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .class.color-4 { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .class.color-5 { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+
+        .class-title {
+            font-weight: 700;
+            font-size: 10px;
+        }
+
+        .class-info {
+            font-size: 9px;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        /* PANEL DERECHO - Detalles */
+        .details-panel {
+            width: 100%;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .details-header {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .info-group {
+            margin-bottom: 20px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .clase-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .clase-card:hover {
+            border-color: var(--primary);
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        .clase-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .clase-card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .clase-card-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .remove-btn {
+            background: var(--danger);
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+
+        .change-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+
+        .change-btn:hover {
+            border-color: var(--primary);
+            background: rgba(124, 58, 237, 0.12);
+        }
+
+        .remove-btn:hover {
+            background: #dc2626;
+        }
+
+        .clase-card-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .meta-item {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 60px;
+        }
+
+        .stats {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: auto;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .stat-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .conflict-warning {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            color: #fca5a5;
+            font-size: 13px;
+            display: none;
+        }
+
+        .conflict-warning.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 14px;
+            max-width: 200px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .horario-container {
+                grid-template-columns: 1fr;
+            }
+
+            .details-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid var(--border);
+                max-height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 300px;
+            }
+
+            .main {
+                flex: 1;
+            }
+
+            .horario-container {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-header {
+                grid-template-columns: 60px repeat(6, minmax(90px, 1fr));
+            }
+
+            .days-columns {
+                grid-template-columns: repeat(6, minmax(90px, 1fr));
+            }
+
+            .grid-body {
+                overflow: auto;
+            }
+        }
+
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .logo-emoji {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR - Búsqueda de materias -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><span class="logo-emoji">📚</span> Constructor</h1>
+                <p>Diseña tu horario perfecto</p>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">📅 Semestre</label>
+                    <select id="semestreSelect">
+                        <option value="">Cargando semestres...</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">🎓 Carrera</label>
+                    <select id="carreraSelect">
+                        <option value="">Selecciona una carrera</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">🔍 Buscar Materia</label>
+                    <input type="text" id="buscarInput" placeholder="Nombre o código...">
+                </div>
+            </div>
+
+            <div class="materias-list" id="materiasList">
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔎</div>
+                    <div class="empty-state-text">Selecciona un semestre y carrera para ver las materias disponibles</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN - Horario -->
+        <div class="main">
+            <div class="main-header">
+                <div class="main-title">📅 Tu Horario</div>
+                <div class="actions">
+                    <button class="secondary" id="exportBtn">📥 Exportar</button>
+                    <button class="danger" id="limpiarBtn">🗑️ Limpiar</button>
+                </div>
+            </div>
+
+            <div class="horario-container">
+                <div class="horario-grid" id="horarioGrid">
+                    <div class="grid-header">
+                        <div class="grid-header-cell">Hora</div>
+                        <div class="grid-header-cell">LUNES</div>
+                        <div class="grid-header-cell">MARTES</div>
+                        <div class="grid-header-cell">MIÉRCOLES</div>
+                        <div class="grid-header-cell">JUEVES</div>
+                        <div class="grid-header-cell">VIERNES</div>
+                        <div class="grid-header-cell">SÁBADO</div>
+                    </div>
+                    <div class="grid-body">
+                        <div class="time-column" id="timeColumn"></div>
+                        <div class="days-columns" id="daysColumns"></div>
+                    </div>
+                </div>
+
+                <!-- DETAILS PANEL -->
+                <div class="details-panel">
+                    <div class="conflict-warning" id="conflictWarning">
+                        ⚠️ Hay conflictos de horario. Verifica las clases solapadas.
+                    </div>
+
+                    <div class="details-header">📋 Mi Horario</div>
+                    <div id="clasesContainer"></div>
+
+                    <div class="stats">
+                        <div class="stat-row">
+                            <span class="stat-label">Materias:</span>
+                            <span class="stat-value" id="statsMateria">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Créditos:</span>
+                            <span class="stat-value" id="statsCreditos">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Horas:</span>
+                            <span class="stat-value" id="statsHoras">0 h</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001/api';
+        
+        // Estado global
+        let estado = {
+            semestre: null,
+            carrera: null,
+            materias: [],
+            materiasEnHorario: {}, // { [codigo]: { codigo, nombre } }
+            coloresMaterias: {}, // { [codigo]: idxColor }
+            clasesSeleccionadas: [], // Array de IDs de horarios seleccionados
+            todosLosHorarios: {} // Cache de horarios
+        };
+
+        const DIAS = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
+        const HORAS = Array.from({length: 17}, (_, i) => 6 + i); // 6 AM a 10 PM
+
+        function normalizarDia(dia) {
+            return (dia || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toUpperCase()
+                .trim();
+        }
+
+        function hayCruceHorario(a, b) {
+            if (normalizarDia(a.dia) !== normalizarDia(b.dia)) return false;
+            return !(a.hora_fin <= b.hora_inicio || b.hora_fin <= a.hora_inicio);
+        }
+
+        function grupoTieneConflicto(horariosGrupo, codigoMateriaExcluir = null) {
+            const clasesBase = estado.clasesSeleccionadas.filter(c => c.codigo_materia !== codigoMateriaExcluir);
+            return horariosGrupo.some(nueva => clasesBase.some(actual => hayCruceHorario(nueva, actual)));
+        }
+
+        function obtenerColorMateria(codigoMateria) {
+            if (estado.coloresMaterias[codigoMateria] === undefined) {
+                estado.coloresMaterias[codigoMateria] = Object.keys(estado.coloresMaterias).length % 6;
+            }
+            return estado.coloresMaterias[codigoMateria];
+        }
+
+        // Inicialización
+        async function init() {
+            await cargarSemestres();
+            setupEventListeners();
+        }
+
+        // EVENTOS
+        function setupEventListeners() {
+            document.getElementById('semestreSelect').addEventListener('change', async (e) => {
+                estado.semestre = e.target.value;
+                estado.carrera = null;
+                await cargarCarreras();
+                document.getElementById('carreraSelect').value = '';
+                limpiarMaterias();
+            });
+
+            document.getElementById('carreraSelect').addEventListener('change', async (e) => {
+                estado.carrera = e.target.value;
+                if (estado.carrera) {
+                    await cargarMaterias();
+                } else {
+                    limpiarMaterias();
+                }
+            });
+
+            document.getElementById('buscarInput').addEventListener('input', (e) => {
+                filtrarMaterias(e.target.value);
+            });
+
+            document.getElementById('limpiarBtn').addEventListener('click', () => {
+                if (confirm('¿Seguro que deseas limpiar todo tu horario?')) {
+                    estado.materiasEnHorario = {};
+                    estado.coloresMaterias = {};
+                    estado.clasesSeleccionadas = [];
+                    renderizarHorario();
+                    actualizarDetalles();
+                }
+            });
+
+            document.getElementById('exportBtn').addEventListener('click', exportarHorario);
+        }
+
+        // CARGAR DATOS
+        async function cargarSemestres() {
+            try {
+                const res = await fetch(`${API_URL}/semestres`);
+                const semestres = await res.json();
+                
+                const select = document.getElementById('semestreSelect');
+                select.innerHTML = '';
+                
+                semestres.forEach(semestre => {
+                    const option = document.createElement('option');
+                    option.value = semestre;
+                    option.textContent = `Semestre ${semestre}`;
+                    select.appendChild(option);
+                });
+
+                if (semestres.length > 0) {
+                    select.value = semestres[0];
+                    estado.semestre = semestres[0];
+                    await cargarCarreras();
+                }
+            } catch (error) {
+                console.error('Error cargando semestres:', error);
+            }
+        }
+
+        async function cargarCarreras() {
+            try {
+                const res = await fetch(`${API_URL}/carreras?semestre=${encodeURIComponent(estado.semestre || '')}`);
+                const carreras = await res.json();
+                
+                const select = document.getElementById('carreraSelect');
+                select.innerHTML = '<option value="">Selecciona una carrera</option>';
+                
+                carreras.forEach(carrera => {
+                    const option = document.createElement('option');
+                    option.value = carrera;
+                    option.textContent = carrera;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error cargando carreras:', error);
+            }
+        }
+
+        async function cargarMaterias() {
+            try {
+                const res = await fetch(`${API_URL}/materias?carrera=${encodeURIComponent(estado.carrera || '')}&semestre=${encodeURIComponent(estado.semestre || '')}`);
+                estado.materias = await res.json();
+                renderizarMaterias();
+            } catch (error) {
+                console.error('Error cargando materias:', error);
+            }
+        }
+
+        // RENDERIZAR MATERIAS
+        async function renderizarMaterias() {
+            const container = document.getElementById('materiasList');
+            
+            if (estado.materias.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div class="empty-state-text">No hay materias disponibles</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = estado.materias.map((materia, idx) => `
+                <div class="materia-item" data-cod="${materia.codigo}" onclick="selectMateria('${materia.codigo}', '${encodeURIComponent(materia.nombre)}')">
+                    <div class="materia-name">${materia.nombre}</div>
+                    <div class="materia-meta">
+                        <span><strong>Código:</strong> ${materia.codigo}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function selectMateria(codigo, nombreCodificado) {
+            try {
+                const nombre = decodeURIComponent(nombreCodificado || '');
+                if (estado.materiasEnHorario[codigo]) {
+                    return;
+                }
+
+                estado.materiasEnHorario[codigo] = { codigo, nombre };
+                actualizarDetalles();
+            } catch (error) {
+                console.error('Error cargando grupos:', error);
+            }
+        }
+
+        async function cambiarGrupo(codigoMateria) {
+            try {
+                const materiaActual = estado.materiasEnHorario[codigoMateria];
+                if (!materiaActual) return;
+
+                const res = await fetch(`${API_URL}/grupos?codigo_materia=${encodeURIComponent(codigoMateria)}&semestre=${encodeURIComponent(estado.semestre || '')}`);
+                const grupos = await res.json();
+
+                if (grupos.length === 0) {
+                    alert('No hay grupos disponibles para esta materia');
+                    return;
+                }
+
+                const gruposMap = {};
+                grupos.forEach(g => {
+                    if (!gruposMap[g.grupo]) {
+                        gruposMap[g.grupo] = [];
+                    }
+                    gruposMap[g.grupo].push(g);
+                });
+
+                mostrarDialogoGrupos(codigoMateria, materiaActual.nombre_materia, gruposMap, true);
+            } catch (error) {
+                console.error('Error cargando grupos para cambio:', error);
+            }
+        }
+
+        function mostrarDialogoGrupos(codigo, nombre, gruposMap, modoCambio = false) {
+            let html = `<div style="background: var(--bg-secondary); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin: 20px; max-height: 500px; overflow-y: auto;">
+                <h3 style="margin-bottom: 16px; color: var(--text-primary);">📚 ${nombre}</h3>`;
+
+            for (const [grupo, horarios] of Object.entries(gruposMap)) {
+                const tieneConflicto = grupoTieneConflicto(horarios, modoCambio ? codigo : null);
+                const cardStyle = tieneConflicto
+                    ? 'margin-bottom: 16px; padding: 12px; background: rgba(51, 65, 85, 0.45); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.45); cursor: not-allowed; opacity: 0.65;'
+                    : 'margin-bottom: 16px; padding: 12px; background: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border); cursor: pointer;';
+                const onClickAttr = tieneConflicto
+                    ? ''
+                    : `onclick="agregarClase('${codigo}', '${grupo}', ${modoCambio})"`;
+
+                html += `<div style="${cardStyle}" ${onClickAttr}>
+                    <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Grupo ${grupo}</div>`;
+                if (tieneConflicto) {
+                    html += `<div style="font-size: 12px; color: #fca5a5; margin-bottom: 8px;">⛔ Se cruza con tu horario actual</div>`;
+                }
+                
+                horarios.forEach(h => {
+                    const salon = h.sala || 'Sin salón';
+                    const sede = h.sede || 'Sin sede';
+                    const edificio = h.edificio ? ` (${h.edificio})` : '';
+                    html += `<div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">
+                        📅 ${h.dia} • ${formatearHora(h.hora_inicio)}-${formatearHora(h.hora_fin)} • 🏫 ${sede}${edificio} • 🏢 ${salon} • 👨‍🏫 ${h.docente || 'Por asignar'}
+                    </div>`;
+                });
+                
+                html += `</div>`;
+            }
+
+            html += `</div>`;
+
+            // Insertar en un modal temporal
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+            modal.innerHTML = html;
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+            document.body.appendChild(modal);
+        }
+
+        async function agregarClase(codigo, grupo, modoCambio = false) {
+            try {
+                const res = await fetch(`${API_URL}/horario-materia?codigo_materia=${encodeURIComponent(codigo)}&grupo=${encodeURIComponent(grupo)}&semestre=${encodeURIComponent(estado.semestre || '')}`);
+                const horarios = await res.json();
+
+                if (!Array.isArray(horarios) || horarios.length === 0) {
+                    alert('No se encontraron horarios para el grupo seleccionado');
+                    return;
+                }
+
+                const yaExiste = estado.clasesSeleccionadas.some(c => c.codigo_materia === codigo);
+                const debeReemplazar = modoCambio ||
+                    (yaExiste && confirm('Esta materia ya está en tu horario. ¿Deseas reemplazarla por este grupo?'));
+
+                if (yaExiste && !debeReemplazar) {
+                    return;
+                }
+
+                if (debeReemplazar) {
+                    estado.clasesSeleccionadas = estado.clasesSeleccionadas.filter(c => c.codigo_materia !== codigo);
+                }
+
+                const hayConflicto = grupoTieneConflicto(horarios, debeReemplazar ? codigo : null);
+                if (hayConflicto) {
+                    alert('Este grupo se cruza con materias de tu horario y no se puede agregar.');
+                    return;
+                }
+
+                const idsActuales = new Set(estado.clasesSeleccionadas.map(c => c.id));
+                if (!estado.materiasEnHorario[codigo]) {
+                    estado.materiasEnHorario[codigo] = {
+                        codigo,
+                        nombre: horarios[0]?.nombre_materia || codigo
+                    };
+                }
+
+                horarios.forEach(h => {
+                    if (!idsActuales.has(h.id)) {
+                        estado.clasesSeleccionadas.push(h);
+                        idsActuales.add(h.id);
+                    }
+                    estado.todosLosHorarios[h.id] = h;
+                });
+
+                renderizarHorario();
+                actualizarDetalles();
+                
+                // Cerrar modal
+                document.querySelector('[style*="position: fixed"]')?.remove();
+            } catch (error) {
+                console.error('Error agregando clase:', error);
+            }
+        }
+
+        // RENDERIZAR HORARIO
+        function renderizarHorario() {
+            // Limpiar grid
+            const timeColumn = document.getElementById('timeColumn');
+            const daysColumns = document.getElementById('daysColumns');
+            
+            timeColumn.innerHTML = '';
+            daysColumns.innerHTML = '';
+
+            // Crear columna de horas
+            HORAS.forEach(hora => {
+                const slot = document.createElement('div');
+                slot.className = 'time-slot';
+                slot.textContent = `${hora}:00`;
+                timeColumn.appendChild(slot);
+            });
+
+            // Crear columnas de días
+            DIAS.forEach(dia => {
+                const dayColumn = document.createElement('div');
+                dayColumn.className = 'day-column';
+
+                HORAS.forEach(hora => {
+                    const slot = document.createElement('div');
+                    slot.className = 'class-slot';
+                    dayColumn.appendChild(slot);
+                });
+
+                daysColumns.appendChild(dayColumn);
+            });
+
+            // Agregar clases seleccionadas
+            estado.clasesSeleccionadas.forEach((clase, idx) => {
+                const diaIndex = DIAS.indexOf(normalizarDia(clase.dia));
+                if (diaIndex === -1) return;
+
+                const horaInicio = Math.floor(clase.hora_inicio);
+                const horaFin = Math.ceil(clase.hora_fin);
+                const duracion = Math.max(1, horaFin - horaInicio);
+
+                for (let offset = 0; offset < duracion; offset++) {
+                    const horaIndex = (horaInicio - 6) + offset;
+                    if (horaIndex < 0 || horaIndex >= HORAS.length) continue;
+
+                    const slot = daysColumns.children[diaIndex].children[horaIndex];
+
+                    const classDiv = document.createElement('div');
+                    const colorIdx = obtenerColorMateria(clase.codigo_materia);
+                    classDiv.className = `class color-${colorIdx}`;
+                    classDiv.innerHTML = `
+                        <div class="class-title">${clase.nombre_materia.substring(0, 15)}</div>
+                        <div class="class-info">G. ${clase.grupo}</div>
+                        <div class="class-info">${clase.sala || clase.edificio || clase.sede || 'Sin ubicación'}</div>
+                    `;
+                    classDiv.onclick = (e) => {
+                        e.stopPropagation();
+                        mostrarDetallesClase(clase);
+                    };
+
+                    slot.appendChild(classDiv);
+                }
+            });
+
+            detectarConflictos();
+        }
+
+        // DETALLES
+        function actualizarDetalles() {
+            const container = document.getElementById('clasesContainer');
+            const materiasAgregadas = Object.values(estado.materiasEnHorario);
+            
+            if (materiasAgregadas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎯</div>
+                        <div class="empty-state-text">Comienza a agregar materias a tu horario</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Agrupar por materia
+            const materiasPorCodigo = {};
+            estado.clasesSeleccionadas.forEach(clase => {
+                if (!materiasPorCodigo[clase.codigo_materia]) {
+                    materiasPorCodigo[clase.codigo_materia] = [];
+                }
+                materiasPorCodigo[clase.codigo_materia].push(clase);
+            });
+
+            container.innerHTML = materiasAgregadas.map((materia) => {
+                const cod = materia.codigo;
+                const clases = materiasPorCodigo[cod] || [];
+                const clase = clases[0] || {};
+                const sedes = [...new Set(clases.map(c => (c.sede || '').trim()).filter(Boolean))];
+                const salones = [...new Set(clases.map(c => (c.sala || '').trim()).filter(Boolean))];
+                const edificios = [...new Set(clases.map(c => (c.edificio || '').trim()).filter(Boolean))];
+                return `
+                    <div class="clase-card">
+                        <div class="clase-card-header">
+                            <div>
+                                <div class="clase-card-title">${materia.nombre}</div>
+                                <div class="meta-label" style="margin-top: 4px;">${clases.length ? `Grupo ${clase.grupo}` : 'Grupo sin seleccionar'}</div>
+                            </div>
+                            <div class="clase-card-actions">
+                                <button class="change-btn" onclick="cambiarGrupo('${cod}')">Grupos</button>
+                                <button class="remove-btn" onclick="eliminarMateria('${cod}')">✕</button>
+                            </div>
+                        </div>
+                        <div class="clase-card-meta" style="margin-top: 12px;">
+                            <div class="meta-item">
+                                <span class="meta-label">👨‍🏫</span>
+                                <span>${clases.length ? (clase.docente || 'Por asignar') : 'Selecciona un grupo'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">🏢</span>
+                                <span>${clases.length ? (salones.length ? salones.join(', ') : (edificios.length ? edificios.join(', ') : 'Sin salón')) : '-'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">📍</span>
+                                <span>${clases.length ? (sedes.length ? sedes.join(', ') : (edificios.length ? edificios.join(', ') : 'Sin sede')) : '-'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Actualizar stats
+            document.getElementById('statsMateria').textContent = materiasAgregadas.length;
+            
+            const horasTotales = new Set(estado.clasesSeleccionadas.map(c => 
+                `${c.dia}-${c.hora_inicio}-${c.hora_fin}`
+            )).size;
+            document.getElementById('statsHoras').textContent = horasTotales;
+        }
+
+        function mostrarDetallesClase(clase) {
+            alert(`
+📚 ${clase.nombre_materia}
+👨‍🏫 Profesor: ${clase.docente}
+🏢 Salón: ${clase.sala}
+📍 Sede: ${clase.sede}
+📅 ${clase.dia} ${formatearHora(clase.hora_inicio)}-${formatearHora(clase.hora_fin)}
+            `);
+        }
+
+        function eliminarMateria(codigo_materia) {
+            delete estado.materiasEnHorario[codigo_materia];
+            delete estado.coloresMaterias[codigo_materia];
+            estado.clasesSeleccionadas = estado.clasesSeleccionadas.filter(c => c.codigo_materia !== codigo_materia);
+            renderizarHorario();
+            actualizarDetalles();
+        }
+
+        // CONFLICTOS
+        function detectarConflictos() {
+            const conflictos = new Set();
+
+            for (let i = 0; i < estado.clasesSeleccionadas.length; i++) {
+                for (let j = i + 1; j < estado.clasesSeleccionadas.length; j++) {
+                    const a = estado.clasesSeleccionadas[i];
+                    const b = estado.clasesSeleccionadas[j];
+
+                    if (normalizarDia(a.dia) === normalizarDia(b.dia)) {
+                        if (!(a.hora_fin <= b.hora_inicio || b.hora_fin <= a.hora_inicio)) {
+                            conflictos.add(i);
+                            conflictos.add(j);
+                        }
+                    }
+                }
+            }
+
+            const warning = document.getElementById('conflictWarning');
+            if (conflictos.size > 0) {
+                warning.classList.add('show');
+            } else {
+                warning.classList.remove('show');
+            }
+        }
+
+        // UTILIDADES
+        function formatearHora(hora) {
+            const h = Math.floor(hora);
+            const m = (hora % 1) * 60;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        }
+
+        function filtrarMaterias(busqueda) {
+            const items = document.querySelectorAll('.materia-item');
+            items.forEach(item => {
+                const texto = item.textContent.toLowerCase();
+                item.style.display = texto.includes(busqueda.toLowerCase()) ? 'block' : 'none';
+            });
+        }
+
+        function limpiarMaterias() {
+            document.getElementById('materiasList').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔎</div>
+                    <div class="empty-state-text">Selecciona un semestre y carrera para ver las materias disponibles</div>
+                </div>
+            `;
+        }
+
+        function exportarHorario() {
+            if (estado.clasesSeleccionadas.length === 0) {
+                alert('Tu horario está vacío. Agrega algunas materias primero.');
+                return;
+            }
+
+            let contenido = 'HORARIO DE CLASES\n';
+            contenido += '=================\n\n';
+
+            const materiasPorCodigo = {};
+            estado.clasesSeleccionadas.forEach(clase => {
+                if (!materiasPorCodigo[clase.codigo_materia]) {
+                    materiasPorCodigo[clase.codigo_materia] = [];
+                }
+                materiasPorCodigo[clase.codigo_materia].push(clase);
+            });
+
+            for (const [cod, clases] of Object.entries(materiasPorCodigo)) {
+                const clase = clases[0];
+                contenido += `${clase.nombre_materia} (Grupo ${clase.grupo})\n`;
+                contenido += `Profesor: ${clase.docente}\n`;
+                clases.forEach(c => {
+                    contenido += `  • ${c.dia} de ${formatearHora(c.hora_inicio)} a ${formatearHora(c.hora_fin)} - Salón ${c.sala} (${c.sede})\n`;
+                });
+                contenido += '\n';
+            }
+
+            const blob = new Blob([contenido], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `horario-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+        }
+
+        // INICIAR
+        init();
+    </script>
+</body>
+</html>
