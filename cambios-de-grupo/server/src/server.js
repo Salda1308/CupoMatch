@@ -10,11 +10,30 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
+app.use(express.json({ charset: 'utf-8' }));
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  next();
+});
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Permitir localhost, 127.0.0.1 y variaciones locales
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3001'
+    ];
+    
+    // Permitir sin origin (requests desde misma máquina o sin Origin header)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   credentials: true
 }));
-app.use(express.json());
 
 // Rutas
 app.use('/api', apiRoutes);

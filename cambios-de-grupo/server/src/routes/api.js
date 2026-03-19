@@ -70,47 +70,42 @@ router.post('/auth/login', async (req, res) => {
 
 /**
  * GET /facultades
- * Obtener lista de facultades únicas
+ * Obtener lista de carreras únicas
  */
 router.get('/facultades', async (req, res) => {
   try {
     const { semestre = '2026-1' } = req.query;
 
-    const facultades = await allQuery(`
-      SELECT DISTINCT carrera as nombre
+    const carreras = await allQuery(`
+      SELECT DISTINCT carrera
       FROM horarios
       WHERE semestre = ?
-      ORDER BY nombre
+      ORDER BY carrera
     `, [semestre]);
 
-    res.json(facultades.map(f => f.nombre));
+    res.json(carreras.map(c => c.carrera));
   } catch (error) {
-    console.error('Error obteniendo facultades:', error);
-    res.status(500).json({ error: 'Error obteniendo facultades' });
+    console.error('Error obteniendo carreras:', error);
+    res.status(500).json({ error: 'Error obteniendo carreras' });
   }
 });
 
 /**
  * GET /carreras
- * Obtener carreras por facultad
- * Query params: ?facultad=INGENIERIA&semestre=2026-1
+ * Alias para /facultades (todas las carreras)
  */
 router.get('/carreras', async (req, res) => {
   try {
-    const { facultad, semestre = '2026-1' } = req.query;
-
-    if (!facultad) {
-      return res.status(400).json({ error: 'Parámetro facultad requerido' });
-    }
+    const { semestre = '2026-1' } = req.query;
 
     const carreras = await allQuery(`
-      SELECT DISTINCT carrera as nombre
+      SELECT DISTINCT carrera
       FROM horarios
-      WHERE carrera LIKE ? AND semestre = ?
-      ORDER BY nombre
-    `, [`%${facultad}%`, semestre]);
+      WHERE semestre = ?
+      ORDER BY carrera
+    `, [semestre]);
 
-    res.json(carreras.map(c => c.nombre));
+    res.json(carreras.map(c => c.carrera));
   } catch (error) {
     console.error('Error obteniendo carreras:', error);
     res.status(500).json({ error: 'Error obteniendo carreras' });

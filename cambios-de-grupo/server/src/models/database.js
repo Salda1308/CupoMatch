@@ -14,6 +14,10 @@ export function initializeDatabase() {
         reject(err);
       } else {
         console.log('✓ Base de datos conectada');
+        // Asegurar UTF-8
+        db.run('PRAGMA encoding = "UTF-8"', (err) => {
+          if (err) console.warn('Error configurando UTF-8:', err);
+        });
         createTables();
         resolve(db);
       }

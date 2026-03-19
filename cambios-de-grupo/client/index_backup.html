@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CupoMatch - Intercambia grupos con facilidad</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #FFC801;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FFD700;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: #fff;
+            color: #222;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(180deg, #ffffff 0%, #fafaf9 100%);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: 20px;
+            padding: 40px 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -100px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 200, 1, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        header h1 {
+            color: #FFC801;
+            margin-bottom: 8px;
+            font-size: 2.8em;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header .subtitle {
+            color: #aaa;
+            font-size: 1em;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            #loginSection {
+                grid-column: 1;
+            }
+
+            #solicitudesActivasSection {
+                grid-column: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .card h2 {
+                font-size: 1.5em;
+            }
+
+            .grupos-info {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 25px;
+                border-radius: 20px;
+            }
+        }
+
+        #loginSection {
+            grid-column: 1;
+        }
+
+        #solicitudesActivasSection {
+            grid-column: 2;
+        }
+
+        #loginSection:only-child,
+        #solicitudesActivasSection:only-child {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            #solicitudesActivasSection {
+                grid-column: 1;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .card h2 {
+            color: #1a1a1a;
+            margin-bottom: 25px;
+            font-size: 1.7em;
+            font-weight: 700;
+            border-bottom: 3px solid #FFC801;
+            padding-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #222;
+            font-size: 0.95em;
+            letter-spacing: -0.2px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fafafa;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFC801' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #FFC801;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(255, 200, 1, 0.15), inset 0 0 0 0 rgba(255, 200, 1, 0.05);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-size: 0.95em;
+        }
+
+        button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FFC801 0%, #FFD700 100%);
+            color: #1a1a1a;
+            box-shadow: 0 4px 12px rgba(255, 200, 1, 0.3);
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #FFD700 0%, #FFEB3B 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 200, 1, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a1a1a;
+            border: 2px solid #eee;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+            border-color: #ddd;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+            animation: slideUp 0.3s ease;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: #0369a1;
+            border-left-color: #0369a1;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            color: #166534;
+            border-left-color: #22c55e;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #7f1d1d;
+            border-left-color: #ef4444;
+        }
+
+        .solicitud-item {
+            border: 1px solid #eee;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+        }
+
+        .solicitud-item:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+            background: linear-gradient(135deg, white 0%, #fafafa 100%);
+            border-color: #FFC801;
+        }
+
+        .solicitud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .materia-nombre {
+            font-weight: 700;
+            color: #1a1a1a;
+            font-size: 1.1em;
+        }
+
+        .grupos-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 15px 0;
+            font-size: 0.95em;
+        }
+
+        .grupo-oferta, .grupo-solicita {
+            padding: 16px;
+            border-radius: 14px;
+            border: 2px solid;
+            transition: all 0.3s ease;
+        }
+
+        .grupo-oferta {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            color: #92400e;
+            border-color: #fcd34d;
+        }
+
+        .grupo-oferta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(252, 211, 77, 0.2);
+        }
+
+        .grupo-solicita {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: #0c4a6e;
+            border-color: #bae6fd;
+        }
+
+        .grupo-solicita:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(186, 230, 253, 0.2);
+        }
+
+        .estudiante-info {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+            font-size: 0.95em;
+            color: #666;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-activa {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+        }
+
+        .status-cerrada {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+        }
+
+        .status-completada {
+            background: linear-gradient(135deg, #dcfce7 0%, #c6f6d5 100%);
+            color: #15803d;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            color: #ccc;
+            font-size: 1.2em;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 28px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-content h2 {
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #999;
+            background: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-close:hover {
+            background: #FFE8CC;
+            color: #FFC801;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 14px 0;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: -2px;
+        }
+
+        .tab:hover {
+            color: #FFC801;
+        }
+
+        .tab.active {
+            color: #FFC801;
+            border-bottom-color: #FFC801;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .interesados-list {
+            margin-top: 20px;
+        }
+
+        .interesado-item {
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            border: 1px solid #eee;
+            border-left: 4px solid #FFC801;
+            transition: all 0.3s ease;
+        }
+
+        .interesado-item:hover {
+            background: linear-gradient(135deg, white 0%, #fafafa 100%);
+            box-shadow: 0 4px 12px rgba(255, 200, 1, 0.1);
+        }
+
+        .interesado-nombre {
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .interesado-contacto {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #FFC801 0%, #FFD700 100%);
+            color: #1a1a1a;
+            padding: 4px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(255, 200, 1, 0.2);
+        }
+
+        .copy-btn:hover {
+            background: linear-gradient(135deg, #FFD700 0%, #FFEB3B 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(255, 200, 1, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .solicitud-item {
+            animation: slideIn 0.3s ease;
+        }
+
+        .card {
+            animation: slideIn 0.4s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CupoMatch</h1>
+            <p class="subtitle">Conecta con otros estudiantes para intercambiar grupos</p>
+            <div class="header-actions" id="headerActions">
+                <button class="btn-secondary" onclick="mostrarLogin()">Iniciar Sesión</button>
+            </div>
+        </header>
+
+        <div class="main-content" id="mainContent">
+            <!-- Sección de Login -->
+            <div id="loginSection" class="card">
+                <h2>Bienvenido</h2>
+                <p style="margin-bottom: 20px; color: #666;">
+                    Usa tu código de estudiante y teléfono para acceder sin contraseña.
+                </p>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="codigo">Código de Estudiante</label>
+                        <input type="text" id="codigo" placeholder="2023001" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono</label>
+                        <input type="tel" id="telefono" placeholder="+57 123 456 7890 o 3101234567" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre">Nombre (opcional)</label>
+                        <input type="text" id="nombre" placeholder="Tu nombre">
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">Continuar</button>
+                </form>
+                <div id="loginAlert" class="hidden alert alert-error"></div>
+            </div>
+
+            <!-- Sección de Solicitudes Activas (visible para todos) -->
+            <div id="solicitudesActivasSection" class="card">
+                <h2>Descubre</h2>
+                
+                <!-- Selectores para filtrar por Carrera → Materia -->
+                <div style="margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label for="filtroCarrera">Carrera</label>
+                        <select id="filtroCarrera" onchange="filtrarPorCarrera()" style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; font-size: 1em; background: #fafafa;">
+                            <option value="">-- Todas las carreras --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="filtroGrupoMaterias" style="display: none;">
+                        <label for="filtroMateria">Materia</label>
+                        <select id="filtroMateria" onchange="cargarSolicitudes()" style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; font-size: 1em; background: #fafafa;">
+                            <option value="">-- Todas las materias --</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-secondary" onclick="limpiarFiltros()" style="margin-top: 10px;">Limpiar filtros</button>
+                </div>
+
+                <div id="solicitudesList" class="empty-state">Cargando solicitudes...</div>
+            </div>
+
+            <!-- Sección de Mis Solicitudes (solo loggeados) -->
+            <div id="misSolicitudesSection" class="card hidden">
+                <h2>Mis Solicitudes</h2>
+                <button class="btn-primary" onclick="irARegistrarCambio()" 
+                        style="margin-bottom: 20px; width: 100%;">+ Nueva Solicitud</button>
+                <div id="misSolicitudesList" class="empty-state">Cargando...</div>
+            </div>
+
+            <!-- Sección de Búsqueda de Materias con Selectores (solo loggeados para registrar) -->
+            <div id="registroMateriaSection" class="card hidden">
+                <h2>Publicar Solicitud</h2>
+                <div style="margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label for="selCarrera">Paso 1: Selecciona tu carrera</label>
+                        <select id="selCarrera" onchange="cargarMateriasPorCarrera()" style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; font-size: 1em; background: #fafafa;">
+                            <option value="">-- Selecciona una carrera --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="grupoMaterias" style="display: none;">
+                        <label for="selMateria">Paso 2: Selecciona la materia</label>
+                        <select id="selMateria" onchange="cargarGruposPorMateria()" style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; font-size: 1em; background: #fafafa;">
+                            <option value="">-- Selecciona una materia --</option>
+                        </select>
+                    </div>
+
+                    <div id="gruposContainer" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 2px solid #eee;">
+                        <h3 style="color: #1a1a1a; margin-bottom: 15px; font-weight: 700;">Paso 3: El grupo que tienes:</h3>
+                        <div id="gruposDisponibles"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear solicitud -->
+    <div id="solicitudModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal('solicitudModal')">✕</button>
+            <h2>Nueva Solicitud</h2>
+            <form id="solicitudForm" onsubmit="crearSolicitud(event)">
+                <div class="form-group">
+                    <label for="solCodigoMateria">Código Materia</label>
+                    <input type="text" id="solCodigoMateria" placeholder="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="solGrupoActual">Grupo que Tengo</label>
+                    <input type="text" id="solGrupoActual" placeholder="025-61" required>
+                </div>
+                <div class="form-group">
+                    <label for="solGrupoDeseado">Grupo que Solicito</label>
+                    <input type="text" id="solGrupoDeseado" placeholder="025-62" required>
+                </div>
+                <div class="form-group">
+                    <label for="solDescripcion">Descripción (opcional)</label>
+                    <textarea id="solDescripcion" placeholder="Ej: Conflicto con otra materia..." rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Publicar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para contactar -->
+    <div id="contactarModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal('contactarModal')">✕</button>
+            <h2>Registrarse</h2>
+            <div class="alert alert-info" style="margin-bottom: 15px;">
+                Los contactaremos usando los datos de tu cuenta: <strong id="datosContactoDisplay"></strong>
+            </div>
+            <form id="contactarForm" onsubmit="enviarContacto(event)">
+                <div class="form-group">
+                    <label for="conMensaje">Mensaje (opcional)</label>
+                    <textarea id="conMensaje" placeholder="Ej: Tengo el grupo que buscas, hablamos?" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Registrarme</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para ver detalles -->
+    <div id="detalleModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal('detalleModal')">✕</button>
+            <div id="detalleContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Detectar si estamos en localhost o 127.0.0.1 y usar la misma dirección para el API
+        const currentHost = window.location.hostname;
+        const API_URL = `http://${currentHost}:3001/api`;
+        let token = null;
+        let usuarioActual = null;
+        let solicitudContactoActual = null;
+
+        // ======================== INIT ========================
+        function init() {
+            token = localStorage.getItem('token');
+            usuarioActual = localStorage.getItem('usuario') && JSON.parse(localStorage.getItem('usuario'));
+
+            // Cargar selectores de filtros de solicitudes públicas
+            cargarFiltrosFacultades();
+            cargarSolicitudes();
+
+            if (token) {
+                mostrarSecciones();
+                cargarFacultadesRegistro();
+            } else {
+                mostrarLogin();
+            }
+        }
+
+        // ======================== AUTH ========================
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const codigo = document.getElementById('codigo').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            const nombre = document.getElementById('nombre').value.trim();
+
+            if (!codigo || !telefono) {
+                mostrarAlert('error', 'Por favor completa los campos requeridos', 'loginAlert');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ codigo, telefono, nombre })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || data.details || 'Error de autenticación');
+                }
+
+                token = data.token;
+                usuarioActual = data.estudiante;
+
+                localStorage.setItem('token', token);
+                localStorage.setItem('usuario', JSON.stringify(usuarioActual));
+
+                mostrarSecciones();
+                mostrarAlert('success', `¡Bienvenido, ${usuarioActual.nombre || usuarioActual.codigo}!`);
+            } catch (error) {
+                console.error('Error en login:', error);
+                mostrarAlert('error', error.message, 'loginAlert');
+            }
+        }
+
+        function mostrarLogin() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('misSolicitudesSection').classList.add('hidden');
+            document.getElementById('registroMateriaSection').classList.add('hidden');
+        }
+
+        function mostrarSecciones() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('misSolicitudesSection').classList.remove('hidden');
+            document.getElementById('registroMateriaSection').classList.remove('hidden');
+
+            document.getElementById('headerActions').innerHTML = `
+                <span style="color: #ccc; font-weight: 600; display: flex; align-items: center; gap: 15px;">
+                    ${usuarioActual.nombre || usuarioActual.codigo}
+                    <button class="btn-secondary" onclick="logout()">Salir</button>
+                </span>
+            `;
+
+            cargarMisSolicitudes();
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas salir?')) {
+                token = null;
+                usuarioActual = null;
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                mostrarLogin();
+                document.getElementById('headerActions').innerHTML = `
+                    <button class="btn-secondary" onclick="mostrarLogin()">Iniciar Sesión</button>
+                `;
+            }
+        }
+
+        // ======================== SOLICITUDES ========================
+        async function cargarSolicitudes() {
+            // Construir query con filtros
+            const filtroMateria = document.getElementById('filtroMateria').value;
+            const query = filtroMateria ? `?materia=${encodeURIComponent(filtroMateria)}` : '';
+
+            try {
+                const response = await fetch(`${API_URL}/solicitudes${query}`);
+                if (!response.ok) throw new Error('Error al cargar');
+
+                const solicitudes = await response.json();
+
+                if (solicitudes.length === 0) {
+                    document.getElementById('solicitudesList').innerHTML = 
+                        '<div class="empty-state"><p style="font-size: 1.05em; color: #ccc;">No hay solicitudes activas con los filtros seleccionados</p></div>';
+                    return;
+                }
+
+                document.getElementById('solicitudesList').innerHTML = solicitudes.map(s => `
+                    <div class="solicitud-item">
+                        <div class="solicitud-header">
+                            <div>
+                                <div class="materia-nombre">${s.nombre_materia || s.codigo_materia}</div>
+                                <span class="status-badge status-${s.estado}">${s.estado}</span>
+                            </div>
+                        </div>
+                        <div class="grupos-info">
+                            <div class="grupo-oferta">
+                                <strong>Ofrece:</strong> Grupo ${s.grupo_que_ofrece}<br>
+                                ${s.docente_ofrece ? `<span style="font-size: 0.85em; color: #666;">${s.docente_ofrece}</span>` : ''}
+                            </div>
+                            <div class="grupo-solicita">
+                                <strong>Solicita:</strong> Grupo ${s.grupo_que_solicita}<br>
+                                ${s.docente_solicita ? `<span style="font-size: 0.85em; color: #666;">${s.docente_solicita}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="estudiante-info">
+                            <strong>${s.nombre || 'Estudiante'}</strong><br>
+                            📞 ${s.telefono}
+                        </div>
+                        <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <button class="btn-secondary btn-small" onclick="verDetalle(${s.id})">
+                                Ver detalles
+                            </button>
+                            <a href="https://wa.me/${s.telefono.replace(/\D/g, '')}?text=Hola,%20vi%20tu%20solicitud%20de%20cambio%20para%20${encodeURIComponent(s.nombre_materia || s.codigo_materia)}.%20Me%20interesa%20hacer%20el%20cambio." 
+                               target="_blank" 
+                               class="btn-success btn-small" 
+                               style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                Contactar por WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('solicitudesList').innerHTML = 
+                    `<div class="empty-state alert alert-error">${error.message}</div>`;
+            }
+        }
+
+        async function cargarMisSolicitudes() {
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_URL}/mis-solicitudes`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Error al cargar');
+
+                const solicitudes = await response.json();
+
+                if (solicitudes.length === 0) {
+                    document.getElementById('misSolicitudesList').innerHTML = 
+                        '<div class="empty-state"><p>No tienes solicitudes aún</p></div>';
+                    return;
+                }
+
+                document.getElementById('misSolicitudesList').innerHTML = solicitudes.map(s => `
+                    <div class="solicitud-item">
+                        <div class="solicitud-header">
+                            <div>
+                                <div class="materia-nombre">${s.nombre_materia || s.codigo_materia}</div>
+                                <span class="status-badge status-${s.estado}">${s.estado}</span>
+                            </div>
+                            <span style="font-size: 0.95em; color: #FFC801; font-weight: 600;">
+                                ${s.total_interesados} ${s.total_interesados === 1 ? 'interesado' : 'interesados'}
+                            </span>
+                        </div>
+                        <div class="grupos-info">
+                            <div class="grupo-oferta">
+                                <strong>Ofrecí:</strong> Grupo ${s.grupo_que_ofrece}<br>
+                                ${s.docente_ofrece ? `<span style="font-size: 0.85em; color: #666;">👨‍🏫 ${s.docente_ofrece}</span>` : ''}
+                            </div>
+                            <div class="grupo-solicita">
+                                <strong>Solicité:</strong> Grupo ${s.grupo_que_solicita}<br>
+                                ${s.docente_solicita ? `<span style="font-size: 0.85em; color: #666;">👨‍🏫 ${s.docente_solicita}</span>` : ''}
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <button class="btn-secondary btn-small" onclick="verDetalle(${s.id})">
+                                Ver detalles
+                            </button>
+                            ${s.estado === 'activa' ? `
+                                <button class="btn-secondary btn-small" onclick="cambiarEstado(${s.id}, 'cerrada')">
+                                    Cerrar solicitud
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function verDetalle(solicitudId) {
+            try {
+                const response = await fetch(`${API_URL}/solicitudes/${solicitudId}`);
+                if (!response.ok) throw new Error('Error al cargar');
+
+                const solicitud = await response.json();
+
+                let html = `
+                    <h2>${solicitud.nombre_materia || solicitud.codigo_materia}</h2>
+                    <p style="color: #666; margin-bottom: 15px;">
+                        ${solicitud.descripcion || 'Sin descripción adicional'}
+                    </p>
+
+                    <div class="grupos-info" style="margin-bottom: 20px;">
+                        <div class="grupo-oferta">
+                            <strong>Grupo Disponible:</strong><br>
+                            ${solicitud.grupo_que_ofrece}
+                        </div>
+                        <div class="grupo-solicita">
+                            <strong>Grupo Buscado:</strong><br>
+                            ${solicitud.grupo_que_solicita}
+                        </div>
+                    </div>
+
+                    <div class="estudiante-info">
+                        <strong>Publicado por:</strong><br>
+                        ${solicitud.nombre || 'Estudiante'}<br>
+                        ${solicitud.telefono} 
+                        <button class="copy-btn" onclick="copiarAlPortapapeles('${solicitud.telefono}')">Copiar</button>
+                    </div>
+                `;
+
+                if (solicitud.contactos && solicitud.contactos.length > 0) {
+                    html += `
+                        <div class="interesados-list">
+                            <h3 style="margin-top: 20px; margin-bottom: 10px; color: #FFC801; font-weight: 700;">
+                                ${solicitud.contactos.length} estudiante(s) interesado(s)
+                            </h3>
+                            ${solicitud.contactos.map(c => `
+                                <div class="interesado-item">
+                                    <div class="interesado-nombre">${c.nombre_interesado}</div>
+                                    <div class="interesado-contacto">
+                                        ${c.telefono_interesado}
+                                        <button class="copy-btn" onclick="copiarAlPortapapeles('${c.telefono_interesado}')">
+                                            Copiar
+                                        </button>
+                                        ${c.email_interesado ? `<br>${c.email_interesado}` : ''}
+                                    </div>
+                                    ${c.mensaje ? `<div style="margin-top: 8px; font-size: 0.9em; color: #666; font-style: italic;>"${c.mensaje}"</div>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                document.getElementById('detalleContent').innerHTML = html;
+                document.getElementById('detalleModal').classList.add('active');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function crearSolicitud(e) {
+            e.preventDefault();
+
+            const codigoMateria = document.getElementById('solCodigoMateria').value;
+            const grupoQueTengo = document.getElementById('solGrupoActual').value;
+            const grupoQueSolicito = document.getElementById('solGrupoDeseado').value;
+            const descripcion = document.getElementById('solDescripcion').value;
+
+            try {
+                const response = await fetch(`${API_URL}/solicitudes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        codigoMateria,
+                        grupoQueTengo,
+                        grupoQueSolicito,
+                        descripcion
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error);
+
+                cerrarModal('solicitudModal');
+                document.getElementById('solicitudForm').reset();
+                mostrarAlert('success', '✅ Tu solicitud ha sido publicada');
+                cargarMisSolicitudes();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function cambiarEstado(solicitudId, nuevoEstado) {
+            try {
+                const response = await fetch(`${API_URL}/solicitudes/${solicitudId}/estado`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ estado: nuevoEstado })
+                });
+
+                if (!response.ok) throw new Error('Error al actualizar');
+
+                cargarMisSolicitudes();
+                mostrarAlert('success', 'Solicitud actualizada');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // ======================== CONTACTOS ========================
+        function mostrarFormularioContacto(solicitudId, grupoOfrecido) {
+            if (!token) {
+                alert('Debes iniciar sesión primero');
+                return;
+            }
+            
+            solicitudContactoActual = solicitudId;
+            
+            // Mostrar los datos de contacto del usuario actual
+            const datosDisplay = usuarioActual.nombre ? 
+                `${usuarioActual.nombre} - ${usuarioActual.telefono}` : 
+                usuarioActual.telefono;
+            document.getElementById('datosContactoDisplay').textContent = datosDisplay;
+            
+            document.getElementById('conMensaje').value = 
+                `Hola, estoy interesado en tu grupo ${grupoOfrecido}. `;
+            document.getElementById('contactarModal').classList.add('active');
+        }
+
+        async function enviarContacto(e) {
+            e.preventDefault();
+
+            const mensaje = document.getElementById('conMensaje').value.trim();
+
+            try {
+                const response = await fetch(
+                    `${API_URL}/solicitudes/${solicitudContactoActual}/contactar`,
+                    {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ mensaje })
+                    }
+                );
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || data.mensaje);
+
+                cerrarModal('contactarModal');
+                document.getElementById('contactarForm').reset();
+                mostrarAlert('success', '✅ Te has registrado. Pronto se contactarán contigo.');
+                cargarSolicitudes();
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarAlert('error', 'Error: ' + error.message);
+            }
+        }
+
+        // ======================== HORARIOS ========================
+        // ======================== FILTROS DE SOLICITUDES PÚBLICAS ========================
+        async function cargarFiltrosFacultades() {
+            try {
+                const response = await fetch(`${API_URL}/facultades`);
+                if (!response.ok) throw new Error('Error');
+
+                const carreras = await response.json();
+                const select = document.getElementById('filtroCarrera');
+                
+                select.innerHTML = '<option value="">-- Todas las carreras --</option>';
+                carreras.forEach(c => {
+                    const option = document.createElement('option');
+                    option.value = c;
+                    option.textContent = c;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error cargando carreras:', error);
+            }
+        }
+
+        async function filtrarPorCarrera() {
+            const carrera = document.getElementById('filtroCarrera').value;
+            
+            if (!carrera) {
+                document.getElementById('filtroGrupoMaterias').style.display = 'none';
+                cargarSolicitudes();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/materias-carrera?carrera=${encodeURIComponent(carrera)}`);
+                if (!response.ok) throw new Error('Error');
+
+                const materias = await response.json();
+                const select = document.getElementById('filtroMateria');
+                
+                select.innerHTML = '<option value="">-- Todas las materias --</option>';
+                materias.forEach(m => {
+                    const option = document.createElement('option');
+                    option.value = m.codigo;
+                    option.textContent = `${m.nombre}`;
+                    select.appendChild(option);
+                });
+
+                document.getElementById('filtroGrupoMaterias').style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function limpiarFiltros() {
+            document.getElementById('filtroCarrera').value = '';
+            document.getElementById('filtroMateria').value = '';
+            document.getElementById('filtroGrupoMaterias').style.display = 'none';
+            cargarSolicitudes();
+        }
+
+        // ======================== BÚSQUEDA DE MATERIAS PARA REGISTRO ========================
+        let carreraRegistroSeleccionada = null;
+        let materiaRegistroSeleccionada = null;
+
+        // Cargar carreras para registro
+        async function cargarFacultadesRegistro() {
+            try {
+                const response = await fetch(`${API_URL}/facultades`);
+                if (!response.ok) throw new Error('Error');
+
+                const carreras = await response.json();
+                const select = document.getElementById('selCarrera');
+                
+                select.innerHTML = '<option value="">-- Selecciona una carrera --</option>';
+                carreras.forEach(c => {
+                    const option = document.createElement('option');
+                    option.value = c;
+                    option.textContent = c;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error cargando carreras:', error);
+            }
+        }
+
+        async function cargarMateriasPorCarrera() {
+            carreraRegistroSeleccionada = document.getElementById('selCarrera').value;
+            
+            if (!carreraRegistroSeleccionada) {
+                document.getElementById('grupoMaterias').style.display = 'none';
+                document.getElementById('gruposContainer').style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/materias-carrera?carrera=${encodeURIComponent(carreraRegistroSeleccionada)}`);
+                if (!response.ok) throw new Error('Error');
+
+                const materias = await response.json();
+                const select = document.getElementById('selMateria');
+                
+                // Limpiar opciones previas
+                select.innerHTML = '<option value="">-- Selecciona una materia --</option>';
+                
+                materias.forEach(m => {
+                    const option = document.createElement('option');
+                    option.value = m.codigo;
+                    option.textContent = `${m.nombre} (${m.total_grupos} grupos)`;
+                    select.appendChild(option);
+                });
+
+                document.getElementById('grupoMaterias').style.display = 'block';
+                document.getElementById('gruposContainer').style.display = 'none';
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function cargarGruposPorMateria() {
+            materiaRegistroSeleccionada = document.getElementById('selMateria').value;
+            
+            if (!materiaRegistroSeleccionada) {
+                document.getElementById('gruposContainer').style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/materias/${materiaRegistroSeleccionada}/grupos`);
+                if (!response.ok) throw new Error('Error');
+
+                const grupos = await response.json();
+                const container = document.getElementById('gruposDisponibles');
+
+                if (grupos.length === 0) {
+                    container.innerHTML = '<p style="color: #999;">No hay grupos disponibles</p>';
+                    return;
+                }
+
+                container.innerHTML = grupos.map(g => `
+                    <div class="solicitud-item" onclick="seleccionarGrupoTengo('${materiaRegistroSeleccionada}', '${g.grupo}', '${g.docente}')" style="cursor: pointer;">
+                        <div style="font-weight: 700; color: #1a1a1a; margin-bottom: 8px; font-size: 1.1em;">
+                            Grupo ${g.grupo}
+                        </div>
+                        <div style="font-size: 0.95em; color: #666; margin-bottom: 8px;">
+                            <strong>${g.docente || 'Docente no especificado'}</strong>
+                        </div>
+                        <div style="font-size: 0.85em; color: #999; margin-bottom: 15px;">
+                            ${g.horarios || 'Horarios no disponibles'}
+                        </div>
+                        <button class="btn-primary btn-small" onclick="event.stopPropagation(); seleccionarGrupoTengo('${materiaRegistroSeleccionada}', '${g.grupo}', '${g.docente}')" style="margin-top: 10px; width: 100%;">
+                            Seleccionar este grupo
+                        </button>
+                    </div>
+                `).join('');
+
+                document.getElementById('gruposContainer').style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('gruposDisponibles').innerHTML = '<p style="color: red;">Error cargando grupos</p>';
+            }
+        }
+
+        function seleccionarGrupoTengo(codigoMateria, grupo, docente) {
+            if (!token) {
+                alert('Debes iniciar sesión primero');
+                return;
+            }
+
+            // Pre-llenar el formulario de solicitud
+            document.getElementById('solCodigoMateria').value = codigoMateria;
+            document.getElementById('solGrupoActual').value = grupo;
+            document.getElementById('solGrupoDeseado').value = '';
+            document.getElementById('solGrupoDeseado').focus();
+            
+            // Mostrar modal
+            document.getElementById('solicitudModal').classList.add('active');
+        }
+
+        // ======================== UTILS ========================
+        function irARegistrarCambio() {
+            // Hacer scroll suave a la sección de registro
+            const seccion = document.getElementById('registroMateriaSection');
+            if (seccion) {
+                seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Opcional: resaltar la sección brevemente
+                seccion.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.5)';
+                setTimeout(() => {
+                    seccion.style.boxShadow = '';
+                }, 2000);
+            }
+        }
+
+        function mostrarFormularioSolicitud() {
+            if (token) {
+                document.getElementById('solicitudModal').classList.add('active');
+            } else {
+                alert('Debes iniciar sesión primero');
+            }
+        }
+
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function mostrarAlert(tipo, mensaje, elementId = null) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${tipo}`;
+            alert.textContent = mensaje;
+
+            if (elementId) {
+                document.getElementById(elementId).innerHTML = '';
+                document.getElementById(elementId).appendChild(alert);
+            } else {
+                const header = document.querySelector('header');
+                header.insertAdjacentElement('afterend', alert);
+                setTimeout(() => alert.remove(), 5000);
+            }
+        }
+
+        function copiarAlPortapapeles(texto) {
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarAlert('success', '📋 Copiado al portapapeles');
+            });
+        }
+
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // Inicializar al cargar
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

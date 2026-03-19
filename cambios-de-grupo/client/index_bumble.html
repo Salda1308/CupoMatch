@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CupoMatch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FFC801;
+            --primary-dark: #FFD700;
+            --dark: #1a1a1a;
+            --light: #f5f5f5;
+            --text: #222;
+            --border: #eee;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track { background: var(--light); }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(180deg, #fff 0%, #fafaf9 100%);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, var(--dark) 0%, #2d2d2d 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        heading {
+            font-size: 2em;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 0.85em;
+            color: #aaa;
+            margin-top: 4px;
+        }
+
+        /* MAIN CONTENT */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* LOGIN SCREEN */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100%;
+            gap: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+        }
+
+        .login-card h2 {
+            font-size: 1.8em;
+            color: var(--dark);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .login-card p {
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--text);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255, 200, 1, 0.15);
+        }
+
+        /* BUTTONS */
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        button:active { transform: scale(0.98); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--dark);
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(255, 200, 1, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #FFEB3B 100%);
+            box-shadow: 0 6px 16px rgba(255, 200, 1, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--text);
+            border: 2px solid var(--border);
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+            border-color: #ddd;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+        }
+
+        /* ALERTS */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border-left: 4px solid;
+            font-size: 0.9em;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #7f1d1d;
+            border-left-color: #ef4444;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #166534;
+            border-left-color: #22c55e;
+        }
+
+        .alert-info {
+            background: #f0f9ff;
+            color: #0369a1;
+            border-left-color: #0369a1;
+        }
+
+        /* CARD STACK  - ESTILO BUMBLE */
+        .card-stack {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .swipe-card {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border);
+            padding: 20px;
+            cursor: grab;
+            position: absolute;
+            user-select: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .swipe-card:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .swipe-card:active { cursor: grabbing; }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .card-badge {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 700;
+        }
+
+        .card-body {
+            display: grid;
+            gap: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            padding: 12px;
+            background: #fafafa;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 0.9em;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .info-value {
+            color: var(--text);
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .card-actions button {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.9em;
+        }
+
+        /* BOTTOM NAVIGATION */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 1px solid var(--border);
+            gap: 10px;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--light);
+            color: var(--text);
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: var(--dark);
+            transform: scale(1.05);
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: var(--dark);
+            box-shadow: 0 4px 12px rgba(255, 200, 1, 0.3);
+        }
+
+        /* USER INFO */
+        .user-info {
+            background: #fafafa;
+            padding: 12px 16px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            border: 1px solid var(--border);
+            margin-bottom: 15px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-code {
+            color: #666;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 450px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5em;
+            color: var(--dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .hidden { display: none; }
+
+        /* FILTERS */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            background: white;
+            color: var(--text);
+            font-size: 0.85em;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        @media (max-width: 600px) {
+            .app-container {
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header>
+            <h1 style="color: var(--primary); font-size: 1.8em; margin-bottom: 4px;">CupoMatch</h1>
+            <p className="subtitle">Cambia de grupos fácilmente</p>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <!-- LOGIN SCREEN -->
+            <section id="loginScreen" class="login-screen">
+                <div class="login-card">
+                    <h2>Bienvenido</h2>
+                    <p>Accede con tu código de estudiante</p>
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="codigo">Código</label>
+                            <input type="text" id="codigo" placeholder="Ej: 2023001" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono">Teléfono</label>
+                            <input type="tel" id="telefono" placeholder="Ej: +57 310 1234567" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre">Nombre (opcional)</label>
+                            <input type="text" id="nombre" placeholder="Tu nombre">
+                        </div>
+                        <div id="loginError" class="alert alert-error hidden"></div>
+                        <button type="submit" class="btn-primary">Continuar</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- FEED SCREEN -->
+            <section id="feedScreen" class="hidden">
+                <div class="user-info">
+                    <div>
+                        <div class="user-name" id="userName">Usuario</div>
+                        <div class="user-code" id="userCode">0000000</div>
+                    </div>
+                    <button class="btn-secondary" style="width: auto; padding: 8px 16px;" onclick="logout()">Salir</button>
+                </div>
+
+                <div class="filter-bar" id="filterBar"></div>
+
+                <div id="cardStack" class="card-stack">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎓</div>
+                        <p>Cargando solicitudes...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav class="bottom-nav" id="bottomNav">
+            <button class="nav-btn active" onclick="showFeed()">🏠</button>
+            <button class="nav-btn" onclick="showMySolicitudes()">❤️</button>
+            <button class="nav-btn" onclick="showNewSolicitud()">➕</button>
+        </nav>
+    </div>
+
+    <!-- MODAL DETAIL -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalles</h2>
+                <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+            </div>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const currentHost = window.location.hostname;
+        const API_URL = `http://${currentHost}:3001/api`;
+        
+        let token = null;
+        let usuarioActual = null;
+
+        // ==================== INICIALIZACIÓN ====================
+        function init() {
+            token = localStorage.getItem('token');
+            usuarioActual = localStorage.getItem('usuario') && JSON.parse(localStorage.getItem('usuario'));
+            
+            if (token) {
+                showFeed();
+                loadSolicitudes();
+            } else {
+                showLogin();
+            }
+        }
+
+        // ==================== VISTAS ====================
+        function showLogin() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('feedScreen').classList.add('hidden');
+            document.getElementById('bottomNav').classList.add('hidden');
+        }
+
+        function showFeed() {
+            if (!token) {
+                showLogin();
+                return;
+            }
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('feedScreen').classList.remove('hidden');
+            document.getElementById('bottomNav').classList.remove('hidden');
+            updateUserInfo();
+            loadSolicitudes();
+        }
+
+        function showMySolicitudes() {
+            alert('Tus solicitudes - En desarrollo');
+        }
+
+        function showNewSolicitud() {
+            if (!token) {
+                alert('Inicia sesión primero');
+                return;
+            }
+            alert('Nueva solicitud - En desarrollo');
+        }
+
+        // ==================== AUTENTICACIÓN ====================
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const codigo = document.getElementById('codigo').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            const nombre = document.getElementById('nombre').value.trim();
+            const errorDiv = document.getElementById('loginError');
+
+            if (!codigo || !telefono) {
+                showAlert(errorDiv, 'error', 'Completa los campos requeridos');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ codigo, telefono, nombre })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || data.details || 'Error de autenticación');
+                }
+
+                token = data.token;
+                usuarioActual = data.estudiante;
+                
+                localStorage.setItem('token', token);
+                localStorage.setItem('usuario', JSON.stringify(usuarioActual));
+
+                showFeed();
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert(errorDiv, 'error', error.message);
+            }
+        }
+
+        function updateUserInfo() {
+            if (usuarioActual) {
+                document.getElementById('userName').textContent = usuarioActual.nombre || usuarioActual.codigo;
+                document.getElementById('userCode').textContent = usuarioActual.codigo;
+            }
+        }
+
+        function logout() {
+            if (confirm('¿Salir?')) {
+                token = null;
+                usuarioActual = null;
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                showLogin();
+                document.getElementById('loginForm').reset();
+            }
+        }
+
+        // ==================== CARGAR SOLICITUDES ====================
+        async function loadSolicitudes() {
+            try {
+                const response = await fetch(`${API_URL}/solicitudes`);
+                if (!response.ok) throw new Error('Error al cargar');
+
+                const solicitudes = await response.json();
+
+                if (solicitudes.length === 0) {
+                    document.getElementById('cardStack').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>No hay solicitudes disponibles</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                renderCards(solicitudes);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('cardStack').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">❌</div>
+                        <p>Error cargando solicitudes</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderCards(solicitudes) {
+            const container = document.getElementById('cardStack');
+            container.innerHTML = '';
+
+            solicitudes.forEach((s, index) => {
+                const card = document.createElement('div');
+                card.className = 'swipe-card';
+                card.style.zIndex = solicitudes.length - index;
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-title">${s.nombre_materia || s.codigo_materia}</div>
+                        <div class="card-badge">${s.estado}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <div class="info-label">Ofrece:</div>
+                            <div class="info-value">Grupo ${s.grupo_que_ofrece}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Solicita:</div>
+                            <div class="info-value">Grupo ${s.grupo_que_solicita}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Contacto:</div>
+                            <div class="info-value">${s.nombre || 'Estudiante'}<br>${s.telefono}</div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-secondary" onclick="verDetalle(${s.id})">Ver</button>
+                        <a href="https://wa.me/57${s.telefono.replace(/\D/g, '').slice(-10)}?text=Hola%20vi%20tu%20solicitud%20de%20cambio%20en%20${encodeURIComponent(s.nombre_materia || s.codigo_materia)}" target="_blank" class="btn-success" style="text-decoration: none; flex: 1;">WhatsApp</a>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        async function verDetalle(id) {
+            try {
+                const response = await fetch(`${API_URL}/solicitudes/${id}`);
+                if (!response.ok) throw new Error('Error');
+
+                const s = await response.json();
+                
+                let html = `
+                    <div class="card-body">
+                        <div class="info-row">
+                            <div class="info-label">Materia:</div>
+                            <div class="info-value">${s.nombre_materia || s.codigo_materia}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Grupo Ofrece:</div>
+                            <div class="info-value">${s.grupo_que_ofrece}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Grupo Solicita:</div>
+                            <div class="info-value">${s.grupo_que_solicita}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Publicado por:</div>
+                            <div class="info-value">${s.nombre || 'Estudiante'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Teléfono:</div>
+                            <div class="info-value">${s.telefono}</div>
+                        </div>
+                `;
+
+                if (s.contactos && s.contactos.length > 0) {
+                    html += `<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                        <strong>${s.contactos.length} interesado(s)</strong>
+                        ${s.contactos.map(c => `
+                            <div style="margin-top: 10px; padding: 10px; background: #fafafa; border-radius: 8px; font-size: 0.9em;">
+                                <strong>${c.nombre_interesado}</strong><br>
+                                ${c.telefono_interesado}
+                            </div>
+                        `).join('')}
+                    </div>`;
+                }
+
+                html += `</div>`;
+
+                document.getElementById('detailContent').innerHTML = html;
+                document.getElementById('detailModal').classList.add('active');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // ==================== UTILIDADES ====================
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function showAlert(element, type, message) {
+            element.textContent = message;
+            element.className = `alert alert-${type}`;
+            element.classList.remove('hidden');
+            if (type === 'success') {
+                setTimeout(() => element.classList.add('hidden'), 3000);
+            }
+        }
+
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // Iniciar
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

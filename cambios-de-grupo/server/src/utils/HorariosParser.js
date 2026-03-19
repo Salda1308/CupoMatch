@@ -14,6 +14,7 @@ class HorariosParser {
     this.pdfPath = null;
     this.horariosData = [];
     this.format = null;
+    this.pythonCommand = process.env.PYTHON_BIN || 'python3';
   }
 
   /**
@@ -47,7 +48,7 @@ except Exception as e:
     print(json.dumps({'error': str(e)}))
 `;
 
-      const python = spawn('python', ['-c', pythonScript]);
+      const python = spawn(this.pythonCommand, ['-c', pythonScript]);
       let output = '';
 
       python.stdout.on('data', (data) => {
@@ -186,7 +187,7 @@ except Exception as e:
     print(json.dumps({'error': str(e)}))
 `;
 
-      const python = spawn('python', ['-c', pythonScript]);
+      const python = spawn(this.pythonCommand, ['-c', pythonScript]);
       let output = '';
       let error = '';
 
